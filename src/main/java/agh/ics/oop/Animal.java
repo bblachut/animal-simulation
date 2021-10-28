@@ -3,10 +3,20 @@ package agh.ics.oop;
 public class Animal {
     private MapDirection mapDirection = MapDirection.NORTH;
     private Vector2d location = new Vector2d(2,2);
+
+    public Vector2d getLocation() {
+        return location;
+    }
+
+    public MapDirection getMapDirection() {
+        return mapDirection;
+    }
+
     @Override
     public String toString(){
         return "Położenie to: "+location+", zwierzę idzie w kierunku " + mapDirection;
     }
+
     public void move(MoveDirection direction){
         switch (direction){
             case RIGHT -> mapDirection = mapDirection.next();
