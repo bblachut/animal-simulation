@@ -18,7 +18,7 @@ public class SimulationEngine implements IEngine{
     private void addAnimalsToMap(){
         for (Vector2d startingLocation : startingLocations) {
             Animal animal = new Animal(map, startingLocation);
-            if (!map.place(new Animal(map, startingLocation))) {
+            if (!map.place(animal)) {
                 System.out.println("Zajęte pole :CC");
             }else arrayOfAnimals.add(animal);
         }
@@ -28,8 +28,10 @@ public class SimulationEngine implements IEngine{
         int counter = 0;
         while (counter < moveDirections.length){
             for(Animal animal : arrayOfAnimals){
-                animal.move(moveDirections[counter]);
-                counter++;
+                if (counter < moveDirections.length) {
+                    animal.move(moveDirections[counter]);
+                    counter++;
+                }
             }
         }
     }
