@@ -1,35 +1,50 @@
 package agh.ics.oop;
 
 public class Animal {
-    private MapDirection mapDirection = MapDirection.NORTH;
+    private MapDirection orientation = MapDirection.NORTH;
     private Vector2d location = new Vector2d(2,2);
+    private IWorldMap map;
+
+    public Animal(){}
+
+    public Animal(IWorldMap map){
+        this.map = map;
+    }
+    public Animal(IWorldMap map, Vector2d initialPosition){
+        location = initialPosition;
+        this.map = map;
+    }
 
     public Vector2d getLocation() {
         return location;
     }
 
-    public MapDirection getMapDirection() {
-        return mapDirection;
+    public MapDirection getOrientation() {
+        return orientation;
+    }
+
+    public void setLocation(Vector2d location) {
+        this.location = location;
     }
 
     @Override
     public String toString(){
-        return "Położenie to: "+location+", zwierzę idzie w kierunku " + mapDirection;
+        return orientation.toString();
     }
 
     public void move(MoveDirection direction){
         switch (direction){
-            case RIGHT -> mapDirection = mapDirection.next();
-            case LEFT -> mapDirection = mapDirection.previous();
+            case RIGHT -> orientation = orientation.next();
+            case LEFT -> orientation = orientation.previous();
             case FORWARD -> {
-                Vector2d x = location.add(mapDirection.toUnitVector());
-                if(x.follows(new Vector2d(0,0)) && x.precedes(new Vector2d(4,4))){
-                location = x;
+                Vector2d x = location.add(orientation.toUnitVector());
+                if(map.canMoveTo(x)){
+                    location = x;
                 }
             }
             case BACKWARD -> {
-                Vector2d x = location.add(mapDirection.toUnitVector().opposite());
-                if (x.follows(new Vector2d(0, 0)) && x.precedes(new Vector2d(4, 4))) {
+                Vector2d x = location.add(orientation.toUnitVector().opposite());
+                if(map.canMoveTo(x)){
                     location = x;
                 }
             }

@@ -9,28 +9,28 @@ public class AnimalTest {
     @Test
     void testOrientation(){
         Animal animal = new Animal();
-        assertEquals(MapDirection.NORTH, animal.getMapDirection());
+        assertEquals(MapDirection.NORTH, animal.getOrientation());
         animal.move(MoveDirection.RIGHT);
-        assertEquals(MapDirection.EAST, animal.getMapDirection());
+        assertEquals(MapDirection.EAST, animal.getOrientation());
         animal.move(MoveDirection.LEFT);
-        assertEquals(MapDirection.NORTH, animal.getMapDirection());
+        assertEquals(MapDirection.NORTH, animal.getOrientation());
         animal.move(MoveDirection.RIGHT);
         animal.move(MoveDirection.RIGHT);
         animal.move(MoveDirection.RIGHT);
-        assertEquals(MapDirection.WEST, animal.getMapDirection());
+        assertEquals(MapDirection.WEST, animal.getOrientation());
         animal.move(MoveDirection.LEFT);
-        assertEquals(MapDirection.SOUTH, animal.getMapDirection());
+        assertEquals(MapDirection.SOUTH, animal.getOrientation());
         animal.move(MoveDirection.FORWARD);
-        assertEquals(MapDirection.SOUTH, animal.getMapDirection());
+        assertEquals(MapDirection.SOUTH, animal.getOrientation());
         animal.move(MoveDirection.BACKWARD);
-        assertEquals(MapDirection.SOUTH, animal.getMapDirection());
+        assertEquals(MapDirection.SOUTH, animal.getOrientation());
         animal.move(MoveDirection.FORWARD);
         animal.move(MoveDirection.FORWARD);
         animal.move(MoveDirection.FORWARD);
         animal.move(MoveDirection.FORWARD);
         animal.move(MoveDirection.FORWARD);
         animal.move(MoveDirection.FORWARD);
-        assertEquals(MapDirection.SOUTH, animal.getMapDirection());
+        assertEquals(MapDirection.SOUTH, animal.getOrientation());
     }
     @Test
     void testLocation(){
@@ -91,6 +91,5 @@ public class AnimalTest {
         assertArrayEquals(new MoveDirection[] {MoveDirection.FORWARD, MoveDirection.BACKWARD, MoveDirection.RIGHT}, optionsParser.parse(new String[] {"f", "backward", "r"}));
         assertArrayEquals(new MoveDirection[] {MoveDirection.LEFT, MoveDirection.LEFT, MoveDirection.RIGHT}, optionsParser.parse(new String[] {"left", "l", "rff", "right"}));
         assertArrayEquals(new MoveDirection[] {MoveDirection.BACKWARD, MoveDirection.FORWARD}, optionsParser.parse(new String[] {"b", "forward", "foward"}));
-
     }
 }

@@ -7,25 +7,25 @@ public class OptionsParser {
         MoveDirection[] res = new MoveDirection[dirs.length];
         int counter = 0;
         for (int i = 0; i < res.length; i++) {
-            switch (dirs[i]){
-                case "f": case  "forward":
-                    res[i] = MoveDirection.FORWARD;
+            switch (dirs[i]) {
+                case "f", "forward" -> {
+                    res[counter] = MoveDirection.FORWARD;
                     counter++;
-                    break;
-                case "b": case "backward":
-                    res[i] = MoveDirection.BACKWARD;
+                }
+                case "b", "backward" -> {
+                    res[counter] = MoveDirection.BACKWARD;
                     counter++;
-                    break;
-                case "l": case "left":
-                    res[i] = MoveDirection.LEFT;
+                }
+                case "l", "left" -> {
+                    res[counter] = MoveDirection.LEFT;
                     counter++;
-                    break;
-                case "r": case "right":
-                    res[i] = MoveDirection.RIGHT;
+                }
+                case "r", "right" -> {
+                    res[counter] = MoveDirection.RIGHT;
                     counter++;
-                    break;
-                default:
-                    break;
+                }
+                default -> {
+                }
             }
         }
         return Arrays.copyOfRange(res, 0, counter);
