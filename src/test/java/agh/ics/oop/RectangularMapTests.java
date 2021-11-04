@@ -40,4 +40,21 @@ public class RectangularMapTests {
         assertTrue(map.canMoveTo(v1));
 
     }
+    @Test
+    void testMoving(){
+        MoveDirection[] directions = new OptionsParser().parse(new String[] {"f", "b", "r", "l", "f", "f", "r", "r", "f", "f", "f", "f", "f", "f", "f", "f"});
+        IWorldMap map = new RectangularMap(10, 5);
+        IWorldMap map2 = new RectangularMap(10, 5);
+        Vector2d[] positions = { new Vector2d(2,2), new Vector2d(3,4) };
+        IEngine engine = new SimulationEngine(directions, map, positions);
+        engine.run();
+        Animal animal1 = new Animal(map2, new Vector2d(3,5));
+        Animal animal2 = new Animal(map2, new Vector2d(2,0));
+        animal2.move(MoveDirection.RIGHT);
+        animal2.move(MoveDirection.RIGHT);
+        map2.place(animal1);
+        map2.place(animal2);
+        assertEquals(map2, map2);
+    }
+
 }
