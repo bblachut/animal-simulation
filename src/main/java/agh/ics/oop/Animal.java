@@ -40,13 +40,13 @@ public class Animal {
                 Vector2d x = location.add(orientation.toUnitVector());
                 if(map.canMoveTo(x)){
                     location = x;
-                }
+                }else System.out.println("zajemte pole " + x);
             }
             case BACKWARD -> {
                 Vector2d x = location.add(orientation.toUnitVector().opposite());
                 if(map.canMoveTo(x)){
                     location = x;
-                }
+                }else System.out.println("zajemte pole " + x);
             }
         }
     }
