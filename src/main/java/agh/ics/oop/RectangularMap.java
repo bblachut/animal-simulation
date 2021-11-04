@@ -15,7 +15,7 @@ public class RectangularMap implements IWorldMap {
     }
 
     public boolean canMoveTo(Vector2d position) {
-        return (0 <= position.x) && (position.x <= width) && (0 <= position.y) && (position.y <= height) && !isOccupied(position);
+        return (0 <= position.x) && (position.x < width) && (0 <= position.y) && (position.y < height) && !isOccupied(position);
     }
 
     public boolean place(Animal animal) {
@@ -48,6 +48,6 @@ public class RectangularMap implements IWorldMap {
     @Override
     public String toString(){
         MapVisualizer mapVisualizer = new MapVisualizer(this);
-        return mapVisualizer.draw(new Vector2d(0,0), new Vector2d(width, height));
+        return mapVisualizer.draw(new Vector2d(0,0), new Vector2d(width-1, height-1));
     }
 }
