@@ -15,18 +15,18 @@ public class RectangularMap implements IWorldMap {
     }
 
     public boolean canMoveTo(Vector2d position) {
-        return (0 <= position.x) && (position.x < width) && (0 <= position.y) && (position.y < height) && !isOccupied(position);
+        return (0 <= position.x) && (position.x < width) && (0 <= position.y) && (position.y < height) && !isOccupied(position);    // nie powinno się schodzić na niższe poziomy abstrakcji
     }
 
     public boolean place(Animal animal) {
-        if (!isOccupied(animal.getLocation())){
+        if (!isOccupied(animal.getLocation())){ // czy ten warunek jest poprawny?
             animals.add(animal);
             return true;
         }
         return false;
     }
 
-    public boolean isOccupied(Vector2d position) {
+    public boolean isOccupied(Vector2d position) {  // ta metoda jest łudząco podobna do tej niżej
         for (Animal animal:animals) {
             if (animal.getLocation().equals(position)){
                 return true;
@@ -47,7 +47,7 @@ public class RectangularMap implements IWorldMap {
 
     @Override
     public String toString(){
-        MapVisualizer mapVisualizer = new MapVisualizer(this);
+        MapVisualizer mapVisualizer = new MapVisualizer(this);  // nowy obiekt co wywołanie
         return mapVisualizer.draw(new Vector2d(0,0), new Vector2d(width-1, height-1));
     }
 }
