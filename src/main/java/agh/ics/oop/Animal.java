@@ -23,10 +23,6 @@ public class Animal {
         return orientation;
     }
 
-    public void setLocation(Vector2d location) {
-        this.location = location;
-    }
-
     @Override
     public String toString(){
         return orientation.toString();
@@ -37,16 +33,16 @@ public class Animal {
             case RIGHT -> orientation = orientation.next();
             case LEFT -> orientation = orientation.previous();
             case FORWARD -> {
-                Vector2d x = location.add(orientation.toUnitVector());  // czy x to czytelna nazwa?
-                if(map.canMoveTo(x)){
-                    location = x;
-                }else System.out.println("zajemte pole " + x);
+                Vector2d destination = location.add(orientation.toUnitVector());
+                if(map.canMoveTo(destination)){
+                    location = destination;
+                }else System.out.println("zajemte pole " + destination);
             }
             case BACKWARD -> {
-                Vector2d x = location.add(orientation.toUnitVector().opposite());
-                if(map.canMoveTo(x)){
-                    location = x;
-                }else System.out.println("zajemte pole " + x);
+                Vector2d destination = location.add(orientation.toUnitVector().opposite());
+                if(map.canMoveTo(destination)){
+                    location = destination;
+                }else System.out.println("zajemte pole " + destination);
             }
         }
     }

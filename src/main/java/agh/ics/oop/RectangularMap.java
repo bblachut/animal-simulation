@@ -1,13 +1,9 @@
 package agh.ics.oop;
 
 public class RectangularMap extends AbstractWorldMap implements IWorldMap {
-    private final int width;
-    private final int height;
     private  final Vector2d v1 = new Vector2d(0,0);
     private  final Vector2d v2;
     public RectangularMap(int width, int height) {
-        this.width = width;
-        this.height = height;
         v2 = new Vector2d(width-1, height-1);
     }
 
