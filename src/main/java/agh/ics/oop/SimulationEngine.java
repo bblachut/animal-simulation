@@ -5,17 +5,15 @@ import java.util.ArrayList;
 public class SimulationEngine implements IEngine{
     private final MoveDirection[] moveDirections;
     private final IWorldMap map;
-    private final Vector2d[] startingLocations;
     private ArrayList<Animal> arrayOfAnimals = new ArrayList<>();
 
     public SimulationEngine(MoveDirection[] moveDirections, IWorldMap map, Vector2d[] startingLocations){
         this.map = map;
         this.moveDirections = moveDirections;
-        this.startingLocations = startingLocations;
-        this.addAnimalsToMap();
+        addAnimalsToMap(startingLocations);
     }
 
-    private void addAnimalsToMap(){
+    private void addAnimalsToMap(Vector2d[] startingLocations){
         for (Vector2d startingLocation : startingLocations) {
             Animal animal = new Animal(map, startingLocation);
             if (!map.place(animal)) {

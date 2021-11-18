@@ -20,7 +20,6 @@ public class RectangularMapTests {
         assertEquals(animal, map.objectAt(v2));
         assertNull(map.objectAt(v1));
         assertTrue(map.isOccupied(v2));
-
     }
     @Test
     void testCanMoveTo(){
@@ -48,13 +47,13 @@ public class RectangularMapTests {
         Vector2d[] positions = { new Vector2d(2,2), new Vector2d(3,4) };
         IEngine engine = new SimulationEngine(directions, map, positions);
         engine.run();
-        Animal animal1 = new Animal(map2, new Vector2d(3,5));
+        Animal animal1 = new Animal(map2, new Vector2d(3,4));
         Animal animal2 = new Animal(map2, new Vector2d(2,0));
         animal2.move(MoveDirection.RIGHT);
         animal2.move(MoveDirection.RIGHT);
         map2.place(animal1);
         map2.place(animal2);
-        assertEquals(map2, map2);
+        assertEquals(map2, map);
     }
 
 }
