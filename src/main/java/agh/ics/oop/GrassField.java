@@ -4,6 +4,7 @@ import java.util.*;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import java.util.HashMap;
 
 
 public class GrassField extends AbstractWorldMap implements IWorldMap{
@@ -13,14 +14,14 @@ public class GrassField extends AbstractWorldMap implements IWorldMap{
     private int minX;
     private int maxY;
     private int minY;
-    private final ArrayList<Grass> grassOnMap = new ArrayList<>();
+    private final HashMap<Vector2d, Grass> grassOnMap = new HashMap<>();
 
     public GrassField(int grassQuantity){
         this.grassQuantity = grassQuantity;
         addGrass();
     }
 
-    public void addGrass(){
+    private void addGrass(){
         Set<Vector2d> picked = new HashSet<>();
         Random rng = new Random();
         for (int i = 0; i < grassQuantity; i++) {
@@ -32,7 +33,7 @@ public class GrassField extends AbstractWorldMap implements IWorldMap{
                 if (!picked.contains(position)){
                     shouldShuffle = false;
                     picked.add(position);
-                    grassOnMap.add(new Grass(position));
+                    grassOnMap.put(position, new Grass(position));
                     maxX = max(maxX, x);
                     minX = min(minX, x);
                     minY = min(minY, y);
@@ -48,26 +49,20 @@ public class GrassField extends AbstractWorldMap implements IWorldMap{
     }
 
     public Object objectAt(Vector2d position) {
-        for (Animal animal : animals) {
-            if (animal.getLocation().equals(position)){
-                return animal;
-            }
+        Animal animal = animals.get(position);
+        if (animal != null){
+            return animal;
         }
-        for (Grass grass: grassOnMap) {
-            if (grass.getPosition().equals(position)){
-                return grass;
-            }
-        }
-        return null;
+        return grassOnMap.get(position);
     }
     @Override
     public String toString(){
         MapVisualizer mapVisualizer = new MapVisualizer(this);
-        for (Animal animal:animals) {
-            maxX = max(maxX, animal.getLocation().x);
-            minX = min(minX, animal.getLocation().x);
-            maxY = max(maxY, animal.getLocation().y);
-            minY = min(minY, animal.getLocation().y);
+        for (Animal animal: animals.values()) {
+            maxX = max(maxX, animal.getPosition().x);
+            minX = min(minX, animal.getPosition().x);
+            maxY = max(maxY, animal.getPosition().y);
+            minY = min(minY, animal.getPosition().y);
         }
         return mapVisualizer.draw(new Vector2d(minX,minY), new Vector2d(maxX, maxY));
     }

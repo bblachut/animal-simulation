@@ -12,12 +12,7 @@ public class RectangularMap extends AbstractWorldMap implements IWorldMap {
     }
 
     public Object objectAt(Vector2d position) {
-        for (Animal animal : animals) {
-            if (animal.getLocation().equals(position)){
-                return animal;
-            }
-        }
-        return null;
+        return animals.get(position);
     }
     @Override
     public String toString(){
