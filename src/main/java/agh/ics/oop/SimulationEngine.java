@@ -3,6 +3,7 @@ package agh.ics.oop;
 import java.util.ArrayList;
 
 public class SimulationEngine implements IEngine{
+    // brak testów
     private final MoveDirection[] moveDirections;
     private final IWorldMap map;
     private ArrayList<Animal> arrayOfAnimals = new ArrayList<>();

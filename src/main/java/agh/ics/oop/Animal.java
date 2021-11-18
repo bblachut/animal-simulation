@@ -37,7 +37,7 @@ public class Animal {
             case RIGHT -> orientation = orientation.next();
             case LEFT -> orientation = orientation.previous();
             case FORWARD -> {
-                Vector2d x = location.add(orientation.toUnitVector());
+                Vector2d x = location.add(orientation.toUnitVector());  // czy x to czytelna nazwa?
                 if(map.canMoveTo(x)){
                     location = x;
                 }else System.out.println("zajemte pole " + x);
