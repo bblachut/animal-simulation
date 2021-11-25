@@ -38,14 +38,18 @@ public class Animal {
             case FORWARD -> {
                 Vector2d destination = position.add(orientation.toUnitVector());
                 if(map.canMoveTo(destination)){
-                    positionChanged(position, destination);
-                }else System.out.println("zajemte pole " + destination);
+                    Vector2d oldPos = position;
+                    position = destination;
+                    positionChanged(oldPos, destination);
+                }
             }
             case BACKWARD -> {
                 Vector2d destination = position.add(orientation.toUnitVector().opposite());
                 if(map.canMoveTo(destination)){
-                    positionChanged(position, destination);
-                }else System.out.println("zajemte pole " + destination);
+                    Vector2d oldPos = position;
+                    position = destination;
+                    positionChanged(oldPos, destination);
+                }
             }
         }
     }

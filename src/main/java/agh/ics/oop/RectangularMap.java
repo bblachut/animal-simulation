@@ -8,15 +8,17 @@ public class RectangularMap extends AbstractWorldMap implements IWorldMap {
     }
 
     public boolean canMoveTo(Vector2d position) {
-        return position.precedes(v2) && position.follows(v1) && !isOccupied(position);
+        return position.precedes(v2) && position.follows(v1) && super.canMoveTo(position);
     }
 
-    public Object objectAt(Vector2d position) {
-        return animals.get(position);
-    }
     @Override
-    public String toString(){
-        MapVisualizer mapVisualizer = new MapVisualizer(this);
-        return mapVisualizer.draw(v1, v2);
+    protected Vector2d getLowerLeft() {
+        return v1;
     }
+
+    @Override
+    protected Vector2d getUpperRight() {
+        return v2;
+    }
+
 }

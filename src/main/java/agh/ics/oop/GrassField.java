@@ -1,19 +1,14 @@
 package agh.ics.oop;
 
 import java.util.*;
-
-import static java.lang.Math.max;
-import static java.lang.Math.min;
 import java.util.HashMap;
 
 
 public class GrassField extends AbstractWorldMap implements IWorldMap{
 
     private final int grassQuantity;
-    private int maxX;
-    private int minX;
-    private int maxY;
-    private int minY;
+    private Vector2d upperRight = new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
+    private Vector2d lowerLeft = new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
     private final HashMap<Vector2d, Grass> grassOnMap = new HashMap<>();
 
     public GrassField(int grassQuantity){
@@ -34,36 +29,34 @@ public class GrassField extends AbstractWorldMap implements IWorldMap{
                     shouldShuffle = false;
                     picked.add(position);
                     grassOnMap.put(position, new Grass(position));
-                    maxX = max(maxX, x);
-                    minX = min(minX, x);
-                    minY = min(minY, y);
-                    maxY = max(maxY, y);
+                    upperRight = upperRight.upperRight(position);
+                    lowerLeft = lowerLeft.lowerLeft(position);
                 }
             }
         }
-        System.out.println(picked);
-    }
-
-    public boolean canMoveTo(Vector2d position) {
-        return !(objectAt(position) instanceof Animal);
     }
 
     public Object objectAt(Vector2d position) {
-        Animal animal = animals.get(position);
-        if (animal != null){
-            return animal;
+        Object object = super.objectAt(position);
+        if (object != null){
+            return object;
         }
         return grassOnMap.get(position);
     }
+
     @Override
-    public String toString(){
-        MapVisualizer mapVisualizer = new MapVisualizer(this);
-        for (Animal animal: animals.values()) {
-            maxX = max(maxX, animal.getPosition().x);
-            minX = min(minX, animal.getPosition().x);
-            maxY = max(maxY, animal.getPosition().y);
-            minY = min(minY, animal.getPosition().y);
+    protected Vector2d getLowerLeft() {//if grass position also change, add calculating its lower left too
+        for (Animal animal : animals.values()) {
+            lowerLeft = lowerLeft.lowerLeft(animal.getPosition());
         }
-        return mapVisualizer.draw(new Vector2d(minX,minY), new Vector2d(maxX, maxY));
+        return lowerLeft;
+    }
+
+    @Override
+    protected Vector2d getUpperRight() {
+        for (Animal animal : animals.values()) {
+            upperRight = upperRight.upperRight(animal.getPosition());
+        }
+        return upperRight;
     }
 }
