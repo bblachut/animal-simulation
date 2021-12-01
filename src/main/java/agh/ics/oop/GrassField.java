@@ -10,6 +10,7 @@ public class GrassField extends AbstractWorldMap implements IWorldMap{
     private Vector2d upperRight = new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
     private Vector2d lowerLeft = new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
     private final HashMap<Vector2d, Grass> grassOnMap = new HashMap<>();
+    private final MapBoundary mapBoundary = new MapBoundary();
 
     public GrassField(int grassQuantity){
         this.grassQuantity = grassQuantity;
@@ -29,6 +30,7 @@ public class GrassField extends AbstractWorldMap implements IWorldMap{
                     shouldShuffle = false;
                     picked.add(position);
                     grassOnMap.put(position, new Grass(position));
+                    mapBoundary.add(position);
                     upperRight = upperRight.upperRight(position);
                     lowerLeft = lowerLeft.lowerLeft(position);
                 }
@@ -36,6 +38,7 @@ public class GrassField extends AbstractWorldMap implements IWorldMap{
         }
     }
 
+    @Override
     public Object objectAt(Vector2d position) {
         Object object = super.objectAt(position);
         if (object != null){
@@ -45,18 +48,22 @@ public class GrassField extends AbstractWorldMap implements IWorldMap{
     }
 
     @Override
-    protected Vector2d getLowerLeft() {//if grass position also change, add calculating its lower left too
-        for (Animal animal : animals.values()) {
-            lowerLeft = lowerLeft.lowerLeft(animal.getPosition());
+    public boolean place(Animal animal) throws IllegalArgumentException{
+        if(super.place(animal)){
+            animal.addObserver(mapBoundary);
+            mapBoundary.add(animal.getPosition());
+            return true;
         }
-        return lowerLeft;
+        throw new IllegalArgumentException("position " +animal.getPosition() + " is already occupied");
+    }
+
+    @Override
+    protected Vector2d getLowerLeft() {
+        return mapBoundary.getLowerLeft();
     }
 
     @Override
     protected Vector2d getUpperRight() {
-        for (Animal animal : animals.values()) {
-            upperRight = upperRight.upperRight(animal.getPosition());
-        }
-        return upperRight;
+        return mapBoundary.getUpperRight();
     }
 }

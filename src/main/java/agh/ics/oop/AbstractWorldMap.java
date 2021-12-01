@@ -8,12 +8,13 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return !(objectAt(position) instanceof Animal);
     }
 
-    public boolean place(Animal animal) {
+    public boolean place(Animal animal) throws IllegalArgumentException{
         if (canMoveTo(animal.getPosition())){
             animals.put(animal.getPosition(), animal);
+            animal.addObserver(this);
             return true;
         }
-        return false;
+        throw new IllegalArgumentException("position " +animal.getPosition() + " is already occupied");
     }
 
     public boolean isOccupied(Vector2d position) {

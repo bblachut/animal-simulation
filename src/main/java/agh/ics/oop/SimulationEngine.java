@@ -7,18 +7,17 @@ public class SimulationEngine implements IEngine{
     private final IWorldMap map;
     private ArrayList<Animal> arrayOfAnimals = new ArrayList<>();
 
-    public SimulationEngine(MoveDirection[] moveDirections, IWorldMap map, Vector2d[] startingLocations){
+    public SimulationEngine(MoveDirection[] moveDirections, IWorldMap map, Vector2d[] startingLocations) throws IllegalArgumentException{
         this.map = map;
         this.moveDirections = moveDirections;
         addAnimalsToMap(startingLocations);
     }
 
-    private void addAnimalsToMap(Vector2d[] startingLocations){
+    private void addAnimalsToMap(Vector2d[] startingLocations) throws IllegalArgumentException{
         for (Vector2d startingLocation : startingLocations) {
             Animal animal = new Animal(map, startingLocation);
-            if (!map.place(animal)) {
-                System.out.println("Zajęte pole :CC");
-            }else arrayOfAnimals.add(animal);
+            map.place(animal);
+            arrayOfAnimals.add(animal);
         }
     }
 
