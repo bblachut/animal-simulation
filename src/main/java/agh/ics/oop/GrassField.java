@@ -7,8 +7,6 @@ import java.util.HashMap;
 public class GrassField extends AbstractWorldMap implements IWorldMap{
 
     private final int grassQuantity;
-    private Vector2d upperRight = new Vector2d(Integer.MIN_VALUE, Integer.MIN_VALUE);
-    private Vector2d lowerLeft = new Vector2d(Integer.MAX_VALUE, Integer.MAX_VALUE);
     private final HashMap<Vector2d, Grass> grassOnMap = new HashMap<>();
     private final MapBoundary mapBoundary = new MapBoundary();
 
@@ -30,12 +28,13 @@ public class GrassField extends AbstractWorldMap implements IWorldMap{
                     shouldShuffle = false;
                     picked.add(position);
                     grassOnMap.put(position, new Grass(position));
-                    mapBoundary.add(position);
-                    upperRight = upperRight.upperRight(position);
-                    lowerLeft = lowerLeft.lowerLeft(position);
+                    mapBoundary.add(position, Grass.class);
                 }
             }
         }
+        Vector2d position = new Vector2d(10, 10);
+        mapBoundary.add(position, Grass.class);
+        grassOnMap.put(position, new Grass(position));
     }
 
     @Override
@@ -51,7 +50,7 @@ public class GrassField extends AbstractWorldMap implements IWorldMap{
     public boolean place(Animal animal) throws IllegalArgumentException{
         if(super.place(animal)){
             animal.addObserver(mapBoundary);
-            mapBoundary.add(animal.getPosition());
+            mapBoundary.add(animal.getPosition(), Animal.class);
             return true;
         }
         throw new IllegalArgumentException("position " +animal.getPosition() + " is already occupied");
