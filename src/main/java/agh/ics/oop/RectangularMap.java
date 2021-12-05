@@ -12,12 +12,12 @@ public class RectangularMap extends AbstractWorldMap implements IWorldMap {
     }
 
     @Override
-    protected Vector2d getLowerLeft() {
+    public Vector2d getLowerLeft() {
         return v1;
     }
 
     @Override
-    protected Vector2d getUpperRight() {
+    public Vector2d getUpperRight() {
         return v2;
     }
 

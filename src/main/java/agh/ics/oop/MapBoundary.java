@@ -28,7 +28,6 @@ public class MapBoundary implements IPositionChangeObserver{
      }
 
     public Vector2d getUpperRight(){
-        System.out.println(xAxis);
         return xAxis.last().getKey().upperRight(yAxis.last().getKey());
     }
 

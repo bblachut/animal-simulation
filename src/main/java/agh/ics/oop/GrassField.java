@@ -57,12 +57,16 @@ public class GrassField extends AbstractWorldMap implements IWorldMap{
     }
 
     @Override
-    protected Vector2d getLowerLeft() {
+    public Vector2d getLowerLeft() {
         return mapBoundary.getLowerLeft();
     }
 
     @Override
-    protected Vector2d getUpperRight() {
+    public Vector2d getUpperRight() {
         return mapBoundary.getUpperRight();
+    }
+
+    public HashMap<Vector2d, Grass> getGrass() {
+        return grassOnMap;
     }
 }

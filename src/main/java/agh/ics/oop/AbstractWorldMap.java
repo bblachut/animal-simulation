@@ -31,13 +31,17 @@ public abstract class AbstractWorldMap implements IWorldMap, IPositionChangeObse
         return animals.get(position);
     }
 
+    public HashMap<Vector2d, Animal> getAnimals(){
+        return animals;
+    }
+
     @Override
     public String toString() {
         MapVisualizer visualizer = new MapVisualizer(this);
         return visualizer.draw(getLowerLeft(), getUpperRight());
     }
 
-    protected abstract Vector2d getLowerLeft();
-    protected abstract Vector2d getUpperRight();
+    public abstract Vector2d getLowerLeft();
+    public abstract Vector2d getUpperRight();
 }
 
