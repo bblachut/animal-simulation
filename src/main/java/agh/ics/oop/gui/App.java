@@ -8,6 +8,7 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.RowConstraints;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public class App extends Application {
     public void start(Stage primaryStage){
         HashMap<Vector2d, Animal> animals = map.getAnimals();
         HashMap<Vector2d, Grass> grassOnMap = map.getGrass();
+        GuiElementBox guiElementBox = new GuiElementBox();
         Vector2d lowerLeft = map.getLowerLeft();
         Vector2d upperRight = map.getUpperRight();
         Label cornerLabel = new Label("y/x");
@@ -41,14 +43,14 @@ public class App extends Application {
             GridPane.setHalignment(label, HPos.CENTER);
         }
         for (Vector2d position: animals.keySet()) {
-            Label label = new Label(animals.get(position).toString());
-            grid.add(label,position.x-lowerLeft.x+1,upperRight.y-position.y+1);
-            GridPane.setHalignment(label, HPos.CENTER);
+            VBox verticalBox = guiElementBox.getBoxElement(animals.get(position));
+            grid.add(verticalBox,position.x-lowerLeft.x+1,upperRight.y-position.y+1);
+            GridPane.setHalignment(verticalBox, HPos.CENTER);
         }
         for (Vector2d position: grassOnMap.keySet()) {
-            Label label = new Label(grassOnMap.get(position).toString());
-            grid.add(label,position.x-lowerLeft.x+1,upperRight.y-position.y+1);
-            GridPane.setHalignment(label, HPos.CENTER);
+            VBox verticalBox = guiElementBox.getBoxElement(grassOnMap.get(position));
+            grid.add(verticalBox,position.x-lowerLeft.x+1,upperRight.y-position.y+1);
+            GridPane.setHalignment(verticalBox, HPos.CENTER);
         }
         grid.setGridLinesVisible(true);
         primaryStage.setScene(scene);
