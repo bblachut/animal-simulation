@@ -1,11 +1,13 @@
 package agh.ics.oop;
 
 import java.util.ArrayList;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Animal implements IMapElement{
     private MapDirection orientation = MapDirection.NORTH;
     private Vector2d position;
     private final IWorldMap map;
+    private final String genotype;
     private final ArrayList<IPositionChangeObserver> observersList = new ArrayList<>();
     public Animal(IWorldMap map){
         this(map, new Vector2d(2,2));
@@ -13,6 +15,11 @@ public class Animal implements IMapElement{
     public Animal(IWorldMap map, Vector2d initialPosition){
         position = initialPosition;
         this.map = map;
+        StringBuilder i = new StringBuilder();
+        for (int j = 0; j < 32; j++) {
+            i.append(ThreadLocalRandom.current().nextInt(0, 8));
+        }
+        genotype = i.toString();
     }
 
     public Vector2d getPosition() {
@@ -60,5 +67,9 @@ public class Animal implements IMapElement{
         for (IPositionChangeObserver observer : observersList){
             observer.positionChanged(oldPosition, newPosition);
         }
+    }
+
+    public String getGenotype() {
+        return genotype;
     }
 }
