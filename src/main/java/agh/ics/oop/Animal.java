@@ -33,6 +33,7 @@ public class Animal implements IMapElement{
                 Vector2d oldPos = position;
                 Vector2d destination = position.add(map.getMoveVector(orientation));
                 if (map.canMoveTo(destination)) {
+                    destination = new Vector2d(destination.x % map.getWidth(), destination.y % map.getHeight());
                     position = destination;
                     positionChanged(oldPos, destination);
                 }

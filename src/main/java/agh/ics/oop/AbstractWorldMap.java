@@ -270,9 +270,13 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
         return imagesArray;
     }
 
-    public abstract Vector2d getLowerLeft();
+    public Vector2d getLowerLeft(){
+        return v1;
+    }
 
-    public abstract Vector2d getUpperRight();
+    public Vector2d getUpperRight(){
+        return v2;
+    }
 
     public abstract boolean canMoveTo(Vector2d position);
 

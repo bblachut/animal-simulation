@@ -2,10 +2,7 @@ package agh.ics.oop.gui;
 import agh.ics.oop.Animal;
 import agh.ics.oop.Grass;
 import agh.ics.oop.IMapElement;
-import javafx.scene.control.Label;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.VBox;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -23,11 +20,9 @@ public class GuiElementBox {
 
         }
         if (element.getClass().equals(Animal.class)){
-            VBox verticalBox;
             Image image = null;
             switch (((Animal) element).getOrientation()){
                 case 0 -> {
-                    ImageView up = null;
                     try {
                         image = new Image(new FileInputStream(".\\src\\main\\resources\\up.png"));
                     } catch (FileNotFoundException e) {

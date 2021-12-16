@@ -8,16 +8,9 @@ import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
-
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Set;
 
 public class App extends Application{
     RectangularMap map1;
@@ -34,7 +27,6 @@ public class App extends Application{
     }
 
     private void drawFirstMap(){
-//        GuiElementBox guiElementBox = new GuiElementBox();
         Vector2d lowerLeft = map1.getLowerLeft();
         Vector2d upperRight = map1.getUpperRight();
         for (int x = 0; x < map1.getWidth(); x++) {
@@ -56,13 +48,6 @@ public class App extends Application{
             grid.add(label,0, upperRight.y-i+1);
             GridPane.setHalignment(label, HPos.CENTER);
         }
-//        for (Vector2d position: map1.getAnimals().keySet()) {
-//            ArrayList<Animal> list = map1.getAnimals().get(position);
-//            list.sort(Comparator.comparingInt((Animal a) -> -a.getCurrentEnergy()));
-//            ImageView image = guiElementBox.getBoxElement(list.get(0));
-//            grid.add(image,position.x-lowerLeft.x+1,upperRight.y-position.y+1);
-//            imagesArray[position.x][position.y] = image;
-//        }
     }
 
     private Scene makeMapScene(){

@@ -1,7 +1,5 @@
 package agh.ics.oop;
 
-import java.util.ArrayList;
-import java.util.concurrent.TransferQueue;
 
 public class ThreadedSimulationEngine implements Runnable{
     private final AbstractWorldMap map;
