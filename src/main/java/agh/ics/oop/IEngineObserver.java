@@ -1,5 +1,5 @@
 package agh.ics.oop;
 
 public interface IEngineObserver {
-    void moved();
+    void dayFinished();
 }

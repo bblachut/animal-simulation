@@ -2,80 +2,90 @@ package agh.ics.oop.gui;
 import agh.ics.oop.Animal;
 import agh.ics.oop.Grass;
 import agh.ics.oop.IMapElement;
-import agh.ics.oop.MapDirection;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 
-import java.awt.*;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public class GuiElementBox {
-    public VBox getBoxElement(IMapElement element){
+    public Image getBoxElement(IMapElement element){
         if (element.getClass().equals(Grass.class)){
-            ImageView grass = null;
+            Image grass = null;
             try {
-                grass = new ImageView(new Image(new FileInputStream(".\\src\\main\\resources\\grass.png")));
+                grass = new Image(new FileInputStream(".\\src\\main\\resources\\grass.png"));
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            grass.setFitHeight(20);
-            grass.setFitWidth(20);
-            return new VBox(grass, new Label("trawa"));
+            return grass;
 
         }
         if (element.getClass().equals(Animal.class)){
             VBox verticalBox;
+            Image image = null;
             switch (((Animal) element).getOrientation()){
-                case NORTH -> {
+                case 0 -> {
                     ImageView up = null;
                     try {
-                        up = new ImageView(new Image(new FileInputStream(".\\src\\main\\resources\\up.png")));
+                        image = new Image(new FileInputStream(".\\src\\main\\resources\\up.png"));
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
-                    up.setFitHeight(20);
-                    up.setFitWidth(20);
-                    verticalBox = new VBox(up, new Label(element.getPosition().toString()));
                 }
-                case SOUTH -> {
-                    ImageView down = null;
+                case 1 -> {
                     try {
-                        down = new ImageView(new Image(new FileInputStream(".\\src\\main\\resources\\down.png")));
+                        image = new Image(new FileInputStream(".\\src\\main\\resources\\rightUp.png"));
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
-                    down.setFitHeight(20);
-                    down.setFitWidth(20);
-                    verticalBox = new VBox(down, new Label(element.getPosition().toString()));
                 }
-                case WEST -> {
-                    ImageView left = null;
+                case 2 -> {
                     try {
-                        left = new ImageView(new Image(new FileInputStream(".\\src\\main\\resources\\left.png")));
+                        image = new Image(new FileInputStream(".\\src\\main\\resources\\right.png"));
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
-                    left.setFitHeight(20);
-                    left.setFitWidth(20);
-                    verticalBox = new VBox(left, new Label(element.getPosition().toString()));
                 }
-                case EAST -> {
-                    ImageView right = null;
+                case 3 -> {
                     try {
-                        right = new ImageView(new Image(new FileInputStream(".\\src\\main\\resources\\right.png")));
+                        image = new Image(new FileInputStream(".\\src\\main\\resources\\rightDown.png"));
                     } catch (FileNotFoundException e) {
                         e.printStackTrace();
                     }
-                    right.setFitHeight(20);
-                    right.setFitWidth(20);
-                    verticalBox = new VBox(right, new Label(element.getPosition().toString()));
+                }
+                case 4 -> {
+                    try {
+                        image = new Image(new FileInputStream(".\\src\\main\\resources\\down.png"));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                case 5 -> {
+                    try {
+                        image = new Image(new FileInputStream(".\\src\\main\\resources\\leftDown.png"));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                case 6 -> {
+                    try {
+                        image = new Image(new FileInputStream(".\\src\\main\\resources\\left.png"));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+                }
+                case 7 -> {
+                    try {
+                        image = new Image(new FileInputStream(".\\src\\main\\resources\\leftUp.png"));
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + ((Animal) element).getOrientation());
             }
-            return verticalBox;
+            return image;
         }
         throw new IllegalArgumentException("You can't pass objects of class " + element.getClass());
     }

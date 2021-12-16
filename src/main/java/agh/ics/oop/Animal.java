@@ -8,12 +8,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Animal implements IMapElement{
     private int orientation;
     private Vector2d position;
-    private final IWorldMap map;
+    private final AbstractWorldMap map;
     private final int[] genotype;
     private final ArrayList<IPositionChangeObserver> observersList = new ArrayList<>();
     private int currentEnergy;
 
-    public Animal(IWorldMap map, Vector2d initialPosition, int[] genotype, int startEnergy){
+    public Animal(AbstractWorldMap map, Vector2d initialPosition, int[] genotype, int startEnergy){
         position = initialPosition;
         this.map = map;
         Arrays.sort(genotype);
@@ -72,7 +72,7 @@ public class Animal implements IMapElement{
         currentEnergy += energyChange;
     }
 
-    public void makeChild(Animal other){
+    public Animal makeChild(Animal other){
         boolean strongerTakesLeft = new Random().nextBoolean();
         Animal a1 = this;
         Animal a2 = other;
@@ -101,6 +101,10 @@ public class Animal implements IMapElement{
                 }
             }
         }
-       map.place(new Animal(map, position, childGenotype, childEnergy));
+       return new Animal(map, position, childGenotype, childEnergy);
+    }
+
+    public int getOrientation() {
+        return orientation;
     }
 }
