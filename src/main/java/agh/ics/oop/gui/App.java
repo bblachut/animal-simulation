@@ -13,11 +13,13 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 public class App extends Application{
-    RectangularMap map1;
-    AbstractWorldMap map2;
-    ImageView[][] imagesArray;
+    RectangularMap mapRec;
+    FoldedMap mapFol;
+    ImageView[][] imagesArrayRec;
+    ImageView[][] imagesArrayFol;
     Stage primaryStage;
-    GridPane grid = new GridPane();
+    GridPane gridRec = new GridPane();
+    GridPane gridFol = new GridPane();
 
     @Override
     public void start(Stage primaryStage){
@@ -27,56 +29,83 @@ public class App extends Application{
     }
 
     private void drawFirstMap(){
-        Vector2d lowerLeft = map1.getLowerLeft();
-        Vector2d upperRight = map1.getUpperRight();
-        for (int x = 0; x < map1.getWidth(); x++) {
-            for (int y = 0; y < map1.getHeight(); y++) {
-                grid.add(imagesArray[x][y], x - lowerLeft.x + 1, upperRight.y - y + 1);
-                GridPane.setHalignment(imagesArray[x][y], HPos.CENTER);
+        Vector2d lowerLeft = mapRec.getLowerLeft();
+        Vector2d upperRight = mapRec.getUpperRight();
+        for (int x = 0; x < mapRec.getWidth(); x++) {
+            for (int y = 0; y < mapRec.getHeight(); y++) {
+                gridRec.add(imagesArrayRec[x][y], x - lowerLeft.x + 1, upperRight.y - y + 1);
+                gridFol.add(imagesArrayFol[x][y], x - lowerLeft.x + 1, upperRight.y - y + 1);
+                GridPane.setHalignment(imagesArrayRec[x][y], HPos.CENTER);
+                GridPane.setHalignment(imagesArrayFol[x][y], HPos.CENTER);
             }
         }
-        Label cornerLabel = new Label("y/x");
-        grid.add(cornerLabel, 0, 0);
-        GridPane.setHalignment(cornerLabel, HPos.CENTER);
+        Label cornerLabelRec = new Label("y/x");
+        Label cornerLabelFol = new Label("y/x");
+        gridRec.add(cornerLabelRec, 0, 0);
+        gridFol.add(cornerLabelFol, 0, 0);
+        GridPane.setHalignment(cornerLabelRec, HPos.CENTER);
+        GridPane.setHalignment(cornerLabelFol, HPos.CENTER);
         for (int i = lowerLeft.x; i <= upperRight.x; i++) {
-            Label label = new Label(String.valueOf(i));
-            grid.add(label,i-lowerLeft.x+1, 0);
-            GridPane.setHalignment(label, HPos.CENTER);
+            Label labelRec = new Label(String.valueOf(i));
+            Label labelFol = new Label(String.valueOf(i));
+            gridRec.add(labelRec,i-lowerLeft.x+1, 0);
+            gridFol.add(labelFol,i-lowerLeft.x+1, 0);
+            GridPane.setHalignment(labelRec, HPos.CENTER);
+            GridPane.setHalignment(labelFol, HPos.CENTER);
         }
         for (int i = lowerLeft.y; i <= upperRight.y; i++) {
-            Label label = new Label(String.valueOf(i));
-            grid.add(label,0, upperRight.y-i+1);
-            GridPane.setHalignment(label, HPos.CENTER);
+            Label labelRec = new Label(String.valueOf(i));
+            Label labelFol = new Label(String.valueOf(i));
+            gridRec.add(labelRec,0, upperRight.y-i+1);
+            gridFol.add(labelFol,0, upperRight.y-i+1);
+            GridPane.setHalignment(labelRec, HPos.CENTER);
+            GridPane.setHalignment(labelFol, HPos.CENTER);
         }
     }
 
     private Scene makeMapScene(){
-        Vector2d lowerLeft = map1.getLowerLeft();
-        Vector2d upperRight = map1.getUpperRight();
-        imagesArray = map1.getImagesArray();
-        Button startButton = new Button("stop");
-        VBox vBox = new VBox(startButton);
-        vBox.setAlignment(Pos.CENTER);
+        Vector2d lowerLeft = mapRec.getLowerLeft();
+        Vector2d upperRight = mapRec.getUpperRight();
+        imagesArrayRec = mapRec.getImagesArray();
+        imagesArrayFol = mapFol.getImagesArray();
+        Button startButtonRec = new Button("stop");
+        Button startButtonFol = new Button("stop");
+        startButtonRec.setAlignment(Pos.CENTER);
+        startButtonFol.setAlignment(Pos.CENTER);
         for (int i = 0; i <= upperRight.x-lowerLeft.x+1; i++) {
-            grid.getColumnConstraints().add(new ColumnConstraints(20));
+            gridRec.getColumnConstraints().add(new ColumnConstraints(20));
+            gridFol.getColumnConstraints().add(new ColumnConstraints(20));
         }
         for (int i = 0; i <= upperRight.y-lowerLeft.y+1; i++) {
-            grid.getRowConstraints().add(new RowConstraints(20));
+            gridRec.getRowConstraints().add(new RowConstraints(20));
+            gridFol.getRowConstraints().add(new RowConstraints(20));
         }
         drawFirstMap();
-        ThreadedSimulationEngine engine = new ThreadedSimulationEngine(map1);
-        Thread engineThread = new Thread(engine);
-        engineThread.start();
-        startButton.setOnAction(event -> {
-            if(startButton.getText().equals("stop")) {
-                engine.setShouldRun(false);
-                startButton.setText("start");
+        ThreadedSimulationEngine engineRec = new ThreadedSimulationEngine(mapRec);
+        ThreadedSimulationEngine engineFol = new ThreadedSimulationEngine(mapFol);
+        Thread engineThreadRec = new Thread(engineRec);
+        Thread engineThreadFol = new Thread(engineFol);
+        engineThreadRec.start();
+        engineThreadFol.start();
+        startButtonRec.setOnAction(event -> {
+            if(startButtonRec.getText().equals("stop")) {
+                engineRec.setShouldRun(false);
+                startButtonRec.setText("start");
             }else {
-                startButton.setText("stop");
-                engine.setShouldRun(true);
+                startButtonRec.setText("stop");
+                engineRec.setShouldRun(true);
             }
         });
-        return new Scene(new HBox(vBox, grid), 1300, 1000);
+        startButtonFol.setOnAction(event -> {
+            if(startButtonFol.getText().equals("stop")) {
+                engineFol.setShouldRun(false);
+                startButtonFol.setText("start");
+            }else {
+                startButtonFol.setText("stop");
+                engineFol.setShouldRun(true);
+            }
+        });
+        return new Scene(new HBox(startButtonRec, gridRec, startButtonFol, gridFol), 1300, 1000);
     }
 
     private Scene makeMenuScene(){
@@ -106,7 +135,11 @@ public class App extends Application{
         Button button = new Button("Start simulation");
 
         button.setOnAction(event -> {
-            map1 = new RectangularMap(Integer.parseInt(widthTxt.getText()), Integer.parseInt(heightTxt.getText()),
+            mapRec = new RectangularMap(Integer.parseInt(widthTxt.getText()), Integer.parseInt(heightTxt.getText()),
+                    Double.parseDouble(jungleRatioTxt.getText()), Integer.parseInt(startEnergyTxt.getText()),
+                    Integer.parseInt(moveEnergyTxt.getText()), Integer.parseInt(plantEnergyTxt.getText()),
+                    Integer.parseInt(startingAnimalsTxt.getText()));
+            mapFol = new FoldedMap(Integer.parseInt(widthTxt.getText()), Integer.parseInt(heightTxt.getText()),
                     Double.parseDouble(jungleRatioTxt.getText()), Integer.parseInt(startEnergyTxt.getText()),
                     Integer.parseInt(moveEnergyTxt.getText()), Integer.parseInt(plantEnergyTxt.getText()),
                     Integer.parseInt(startingAnimalsTxt.getText()));
