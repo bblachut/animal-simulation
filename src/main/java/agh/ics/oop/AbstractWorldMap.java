@@ -106,8 +106,8 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
             removeFromFreeSquares(newPosition);
         }
         animals.get(animal.getPosition()).add(animal);
-        updateImage(oldPosition);
         updateImage(newPosition);
+        updateImage(oldPosition);
     }
 
     public void addGrass(){
@@ -180,6 +180,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
         for (Animal animal:livingAnimals){
             animal.move();
             animal.changeCurrentEnergy(-moveEnergy);
+            updateImage(animal.getPosition());
         }
     }
 
