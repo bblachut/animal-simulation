@@ -21,7 +21,7 @@ public class ThreadedSimulationEngine implements Runnable{
                 map.animalsBreed();
                 map.addGrass();
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(30);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

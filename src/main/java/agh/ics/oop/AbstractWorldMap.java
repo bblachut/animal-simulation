@@ -128,8 +128,8 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
         if(!steppeFreeSquares.isEmpty()){
             boolean shouldShuffle = true;
             while (shouldShuffle) {
-                int x = ThreadLocalRandom.current().nextInt(0,width-1);
-                int y = ThreadLocalRandom.current().nextInt(0,width+1);
+                int x = ThreadLocalRandom.current().nextInt(0,width);
+                int y = ThreadLocalRandom.current().nextInt(0,width);
                 Vector2d position = new Vector2d(x, y);
                 if (steppeFreeSquares.contains(position)){
                     shouldShuffle = false;
