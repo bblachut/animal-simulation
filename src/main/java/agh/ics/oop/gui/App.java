@@ -13,13 +13,15 @@ import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
 public class App extends Application{
-    RectangularMap mapRec;
-    FoldedMap mapFol;
-    ImageView[][] imagesArrayRec;
-    ImageView[][] imagesArrayFol;
-    Stage primaryStage;
-    GridPane gridRec = new GridPane();
-    GridPane gridFol = new GridPane();
+    private RectangularMap mapRec;
+    private FoldedMap mapFol;
+    private ImageView[][] imagesArrayRec;
+    private ImageView[][] imagesArrayFol;
+    private Stage primaryStage;
+    private final GridPane gridRec = new GridPane();
+    private final GridPane gridFol = new GridPane();
+    private ThreadedSimulationEngine engineRec;
+    private ThreadedSimulationEngine engineFol;
 
     @Override
     public void start(Stage primaryStage){
@@ -66,6 +68,10 @@ public class App extends Application{
     private Scene makeMapScene(){
         Vector2d lowerLeft = mapRec.getLowerLeft();
         Vector2d upperRight = mapRec.getUpperRight();
+        engineRec = new ThreadedSimulationEngine(mapRec);
+        engineFol = new ThreadedSimulationEngine(mapFol);
+        Plotter pltRec = new Plotter(mapRec, engineRec);
+        Plotter pltFol = new Plotter(mapFol, engineFol);
         imagesArrayRec = mapRec.getImagesArray();
         imagesArrayFol = mapFol.getImagesArray();
         Button startButtonRec = new Button("stop");
@@ -81,12 +87,6 @@ public class App extends Application{
             gridFol.getRowConstraints().add(new RowConstraints(20));
         }
         drawFirstMap();
-        ThreadedSimulationEngine engineRec = new ThreadedSimulationEngine(mapRec);
-        ThreadedSimulationEngine engineFol = new ThreadedSimulationEngine(mapFol);
-        Thread engineThreadRec = new Thread(engineRec);
-        Thread engineThreadFol = new Thread(engineFol);
-        engineThreadRec.start();
-        engineThreadFol.start();
         startButtonRec.setOnAction(event -> {
             if(startButtonRec.getText().equals("stop")) {
                 engineRec.setShouldRun(false);
@@ -105,7 +105,13 @@ public class App extends Application{
                 engineFol.setShouldRun(true);
             }
         });
-        return new Scene(new HBox(startButtonRec, gridRec, startButtonFol, gridFol), 1300, 1000);
+        VBox plotsRec = new VBox(pltRec.plotAnimals(),pltRec.plotGrass(),pltRec.plotEnergy(),pltRec.plotLifeTime(),pltRec.plotChildren());
+        VBox plotsFol = new VBox(pltFol.plotAnimals(),pltFol.plotGrass(),pltFol.plotEnergy(),pltFol.plotLifeTime(),pltFol.plotChildren());
+        Thread engineThreadRec = new Thread(engineRec);
+        Thread engineThreadFol = new Thread(engineFol);
+        engineThreadRec.start();
+        engineThreadFol.start();
+        return new Scene(new HBox(plotsRec,new VBox(startButtonRec, gridRec), new VBox(startButtonFol, gridFol), plotsFol), 1300, 1000);
     }
 
     private Scene makeMenuScene(){
@@ -117,8 +123,8 @@ public class App extends Application{
         Label moveEnergyLab = new Label("Energy cost of move");
         Label plantEnergyLab = new Label("Energy given by plants");
         Label startingAnimalsLab = new Label("Amount of animals starting on the map");
-        TextField heightTxt = new TextField("30");
-        TextField widthTxt = new TextField("30");
+        TextField heightTxt = new TextField("20");
+        TextField widthTxt = new TextField("20");
         TextField jungleRatioTxt = new TextField("0.1");
         TextField startEnergyTxt = new TextField("40");
         TextField moveEnergyTxt = new TextField("1");

@@ -8,79 +8,59 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
 public class GuiElementBox {
+    private  Image[] images;
+
+    {
+        try {
+            images = new Image[]{new Image(new FileInputStream(".\\src\\main\\resources\\grass.png")),
+                    new Image(new FileInputStream(".\\src\\main\\resources\\up.png")),
+                    new Image(new FileInputStream(".\\src\\main\\resources\\rightUp.png")),
+                    new Image(new FileInputStream(".\\src\\main\\resources\\right.png")),
+                    new Image(new FileInputStream(".\\src\\main\\resources\\rightDown.png")),
+                    new Image(new FileInputStream(".\\src\\main\\resources\\down.png")),
+                    new Image(new FileInputStream(".\\src\\main\\resources\\leftDown.png")),
+                    new Image(new FileInputStream(".\\src\\main\\resources\\left.png")),
+                    new Image(new FileInputStream(".\\src\\main\\resources\\leftUp.png")),
+            };
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
     public Image getBoxElement(IMapElement element){
+
         if (element.getClass().equals(Grass.class)){
-            Image grass = null;
-            try {
-                grass = new Image(new FileInputStream(".\\src\\main\\resources\\grass.png"));
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            return grass;
+            return images[0];
 
         }
         if (element.getClass().equals(Animal.class)){
-            Image image = null;
             switch (((Animal) element).getOrientation()){
                 case 0 -> {
-                    try {
-                        image = new Image(new FileInputStream(".\\src\\main\\resources\\up.png"));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                    return images[1];
                 }
                 case 1 -> {
-                    try {
-                        image = new Image(new FileInputStream(".\\src\\main\\resources\\rightUp.png"));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                    return images[2];
                 }
                 case 2 -> {
-                    try {
-                        image = new Image(new FileInputStream(".\\src\\main\\resources\\right.png"));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                    return images[3];
                 }
                 case 3 -> {
-                    try {
-                        image = new Image(new FileInputStream(".\\src\\main\\resources\\rightDown.png"));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                    return images[4];
                 }
                 case 4 -> {
-                    try {
-                        image = new Image(new FileInputStream(".\\src\\main\\resources\\down.png"));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                    return images[5];
                 }
                 case 5 -> {
-                    try {
-                        image = new Image(new FileInputStream(".\\src\\main\\resources\\leftDown.png"));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                    return images[6];
                 }
                 case 6 -> {
-                    try {
-                        image = new Image(new FileInputStream(".\\src\\main\\resources\\left.png"));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                    return images[7];
                 }
                 case 7 -> {
-                    try {
-                        image = new Image(new FileInputStream(".\\src\\main\\resources\\leftUp.png"));
-                    } catch (FileNotFoundException e) {
-                        e.printStackTrace();
-                    }
+                    return images[8];
                 }
                 default -> throw new IllegalStateException("Unexpected value: " + ((Animal) element).getOrientation());
             }
-            return image;
         }
         throw new IllegalArgumentException("You can't pass objects of class " + element.getClass());
     }

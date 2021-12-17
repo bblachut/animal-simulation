@@ -12,6 +12,8 @@ public class Animal implements IMapElement{
     private final int[] genotype;
     private final ArrayList<IPositionChangeObserver> observersList = new ArrayList<>();
     private int currentEnergy;
+    private int lifetime = 0;
+    private int childrenAmount = 0;
 
     public Animal(AbstractWorldMap map, Vector2d initialPosition, int[] genotype, int startEnergy){
         position = initialPosition;
@@ -22,11 +24,8 @@ public class Animal implements IMapElement{
         currentEnergy = startEnergy;
     }
 
-    public Vector2d getPosition() {
-        return position;
-    }
-
     public void move(){
+        lifetime++;
         int orientationChange = genotype[ThreadLocalRandom.current().nextInt(0, 32)];
         switch (orientationChange){
             case 0 -> {
@@ -103,10 +102,24 @@ public class Animal implements IMapElement{
                 }
             }
         }
+        childrenAmount++;
+        other.incrementChildren();
        return new Animal(map, position, childGenotype, childEnergy);
     }
 
     public int getOrientation() {
         return orientation;
+    }
+
+    public Vector2d getPosition() {
+        return position;
+    }
+
+    public int getLifetime(){
+        return lifetime;
+    }
+
+    public void incrementChildren(){
+        childrenAmount++;
     }
 }

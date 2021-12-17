@@ -1,6 +1,7 @@
 package agh.ics.oop;
 
 import agh.ics.oop.gui.GuiElementBox;
+import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
@@ -18,16 +19,30 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
     private final int startEnergy;
     private final int moveEnergy;
     private final int plantEnergy;
-    private ImageView[][] imagesArray;
+    private double averageLifetime = 0;
+    private double averageChildrenAmount = 0;
+    private int deadAnimalsCounter = 0;
+    private final ImageView[][] imagesArray;
     protected final Vector2d v1 = new Vector2d(0,0);
     protected final Vector2d v2;
     private final Set<Vector2d> steppeFreeSquares = new HashSet<>();
     private final Set<Vector2d> jungleFreeSquares = new HashSet<>();
-    Set<Animal> livingAnimals = new HashSet<>();
+    Set<Animal> livingAnimals = Collections.newSetFromMap(new ConcurrentHashMap<Animal, Boolean>());
     protected Vector2d[] moveVectors = {new Vector2d(0,1), new Vector2d(1,1),new Vector2d(1,0), new Vector2d(1,-1),
             new Vector2d(0,-1),new Vector2d(-1,-1),new Vector2d(-1,0),new Vector2d(-1,1),};
     protected ConcurrentHashMap<Vector2d, ArrayList<Animal>> animals = new ConcurrentHashMap<>();
     protected ConcurrentHashMap<Vector2d, Grass> grass = new ConcurrentHashMap<>();
+    private Image transparent;
+    private GuiElementBox guiElementBox = new GuiElementBox();
+
+
+    {
+        try {
+            transparent = new Image(new FileInputStream(".\\src\\main\\resources\\transparent.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     public AbstractWorldMap(int width, int height, double jungleRatio, int startEnergy, int moveEnergy, int plantEnergy, int startingAnimals) {
         this.startEnergy = startEnergy;
@@ -74,6 +89,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
 
     public void place(Animal animal){
         if (canMoveTo(animal.getPosition())){
+            averageChildrenAmount = averageChildrenAmount*livingAnimals.size()/(livingAnimals.size()+1)+0.0/(livingAnimals.size()+1);
             if(!animals.containsKey(animal.getPosition())){
                 animals.put(animal.getPosition(), new ArrayList<>());
                 removeFromFreeSquares(animal.getPosition());
@@ -169,6 +185,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
                 list.sort(Comparator.comparingInt((Animal a) -> -a.getCurrentEnergy()));
                 if (list.get(0).getCurrentEnergy()>=startEnergy/2 && list.get(1).getCurrentEnergy()>=startEnergy/2){
                     Animal child = list.get(0).makeChild(list.get(1));
+                    averageChildrenAmount += 2.0/livingAnimals.size();
                     place(child);
                     livingAnimals.add(child);
                 }
@@ -189,11 +206,14 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
         while (it.hasNext()){
             Animal animal = it.next();
             if(animal.getCurrentEnergy()<=0){
+                averageLifetime = averageLifetime*deadAnimalsCounter/(deadAnimalsCounter+1)+(double)animal.getLifetime()/(deadAnimalsCounter+1);
+                averageChildrenAmount = (averageChildrenAmount-1.0/livingAnimals.size())*((double) livingAnimals.size()/(livingAnimals.size()-1));
+                deadAnimalsCounter++;
                 remove(animal);
                 it.remove();
             }
         }
-        System.out.println(livingAnimals.size());
+//        System.out.println(livingAnimals.size());
     }
 
     private void removeFromFreeSquares(Vector2d position){
@@ -217,41 +237,32 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
     private void setUpImageArray(){
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
-                try {
-                    ImageView image = new ImageView(new Image(new FileInputStream(".\\src\\main\\resources\\transparent.png")));
-                    image.setFitWidth(18);
-                    image.setFitHeight(18);
-                    imagesArray[x][y] = image;
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                ImageView image = new ImageView(transparent);
+                image.setFitWidth(18);
+                image.setFitHeight(18);
+                imagesArray[x][y] = image;
             }
         }
     }
 
     private void updateImage(Vector2d position){
-        GuiElementBox guiElementBox = new GuiElementBox();
             if (animals.containsKey(position)){
                 ArrayList<Animal> list = animals.get(position);
                 list.sort(Comparator.comparingInt((Animal a) -> -a.getCurrentEnergy()));
-                imagesArray[position.x][position.y].setImage(guiElementBox.getBoxElement(list.get(0)));
+                Animal animal = list.get(0);
+                Platform.runLater(() -> {
+                imagesArray[position.x][position.y].setImage(guiElementBox.getBoxElement(animal));
+                });
             }else if (grass.containsKey(position)){
-                imagesArray[position.x][position.y].setImage(guiElementBox.getBoxElement(grass.get(position)));
+                Grass grass1 = grass.get(position);
+                Platform.runLater(() -> {
+                imagesArray[position.x][position.y].setImage(guiElementBox.getBoxElement(grass1));
+                });
             }else {
-                try {
-                    imagesArray[position.x][position.y].setImage(new Image(new FileInputStream(".\\src\\main\\resources\\transparent.png")));
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                Platform.runLater(() -> {
+                    imagesArray[position.x][position.y].setImage(transparent);
+                });
             }
-    }
-
-    public ConcurrentHashMap<Vector2d, ArrayList<Animal>> getAnimals(){
-        return animals;
-    }
-
-    public ConcurrentHashMap<Vector2d, Grass> getGrass() {
-        return grass;
     }
 
     public Vector2d getMoveVector(int orientation){
@@ -276,6 +287,28 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
 
     public Vector2d getUpperRight(){
         return v2;
+    }
+
+    public int getAnimalsAmount(){
+        return livingAnimals.size();
+    }
+
+    public int getGrassAmount(){
+        return grass.size();
+    }
+
+    public int getEnergySum(){
+        int energySum = 0;
+        for(Animal animal:livingAnimals){
+            if (animal.getCurrentEnergy() > 0) {
+                energySum += animal.getCurrentEnergy();
+            }
+        }
+        return energySum;
+    }
+
+    public double getAverageLifetime() {
+        return averageLifetime;
     }
 
     public abstract boolean canMoveTo(Vector2d position);
