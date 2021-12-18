@@ -75,11 +75,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
                 if (jungleFreeSquares.contains(position) || steppeFreeSquares.contains(position)){
                     shouldShuffle = false;
                     removeFromFreeSquares(position);
-                    int[] randomGenotype = new int[32];
-                    for (int j = 0; j < 32; j++) {
-                        randomGenotype[j] = rng.nextInt(8);
-                    }
-                    Animal animal = new Animal(this, position, randomGenotype, startEnergy);
+                    Animal animal = new Animal(this, position, new Genotype(), startEnergy);
                     place(animal);
                     livingAnimals.add(animal);
                 }

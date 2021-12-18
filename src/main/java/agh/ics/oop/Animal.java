@@ -9,16 +9,15 @@ public class Animal implements IMapElement{
     private int orientation;
     private Vector2d position;
     private final AbstractWorldMap map;
-    private final int[] genotype;
+    private final Genotype genotype;
     private final ArrayList<IPositionChangeObserver> observersList = new ArrayList<>();
     private int currentEnergy;
     private int lifetime = 0;
     private int childrenAmount = 0;
 
-    public Animal(AbstractWorldMap map, Vector2d initialPosition, int[] genotype, int startEnergy){
+    public Animal(AbstractWorldMap map, Vector2d initialPosition, Genotype genotype, int startEnergy){
         position = initialPosition;
         this.map = map;
-        Arrays.sort(genotype);
         this.genotype = genotype;
         orientation = ThreadLocalRandom.current().nextInt(0, 8);
         currentEnergy = startEnergy;
@@ -26,7 +25,7 @@ public class Animal implements IMapElement{
 
     public void move(){
         lifetime++;
-        int orientationChange = genotype[ThreadLocalRandom.current().nextInt(0, 32)];
+        int orientationChange = genotype.getArray()[ThreadLocalRandom.current().nextInt(0, 32)];
         switch (orientationChange){
             case 0 -> {
                 Vector2d oldPos = position;
@@ -61,7 +60,7 @@ public class Animal implements IMapElement{
         }
     }
 
-    public int[] getGenotype() {
+    public Genotype getGenotype() {
         return genotype;
     }
 
@@ -74,34 +73,8 @@ public class Animal implements IMapElement{
     }
 
     public Animal makeChild(Animal other){
-        boolean strongerTakesLeft = new Random().nextBoolean();
-        Animal a1 = this;
-        Animal a2 = other;
-        int childEnergy = getCurrentEnergy()/4+ other.getCurrentEnergy()/4;
-        changeCurrentEnergy(-getCurrentEnergy()/4);
-        other.changeCurrentEnergy(-other.getCurrentEnergy()/4);
-        int[] childGenotype = new int[32];
-        if (currentEnergy < other.getCurrentEnergy()) {
-            a1 = other;
-            a2 = this;
-        }
-        int[] a1Gen = a1.getGenotype();
-        int[] a2Gen = a2.getGenotype();
-        for (int i = 0; i < 32; i++) {
-            if (strongerTakesLeft){
-                if (i<a1.getCurrentEnergy()*32/a2.getCurrentEnergy()) {
-                    childGenotype[i] = a1Gen[i];
-                }else {
-                    childGenotype[i] = a2Gen[i];
-                }
-            }else {
-                if (i<32-(a1.getCurrentEnergy()*32/a2.getCurrentEnergy())) {
-                    childGenotype[i] = a2Gen[i];
-                }else {
-                    childGenotype[i] = a1Gen[i];
-                }
-            }
-        }
+        int childEnergy = this.getCurrentEnergy()/4+ other.getCurrentEnergy()/4;
+        Genotype childGenotype = new Genotype(this, other);
         childrenAmount++;
         other.incrementChildren();
        return new Animal(map, position, childGenotype, childEnergy);
