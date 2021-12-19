@@ -148,8 +148,8 @@ public class App extends Application{
         Thread engineThreadFol = new Thread(engineFol);
         engineThreadRec.start();
         engineThreadFol.start();
-        return new Scene(new HBox(plotsRec,new VBox(new HBox(startButtonRec, statRec.getDominantGenotypeLabel()), new VBox(gridRec, highlightRec, statRec.trackedStats())),
-                new VBox(new HBox(startButtonFol, statFol.getDominantGenotypeLabel()), new VBox(gridFol, highlightFol, statFol.trackedStats())), plotsFol), 1300, 1000);
+        return new Scene(new HBox(plotsRec,new VBox(new Label("Dominant genotype"), new HBox(startButtonRec, statRec.getDominantGenotypeLabel()), gridRec, highlightRec, statRec.trackedStats()),
+                new VBox(new Label("Dominant genotype"), new HBox(startButtonFol, statFol.getDominantGenotypeLabel()), gridFol, highlightFol, statFol.trackedStats()), plotsFol), 1300, 1000);
     }
 
     private Scene makeMenuScene(){
