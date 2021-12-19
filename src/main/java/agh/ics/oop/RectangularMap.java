@@ -2,8 +2,8 @@ package agh.ics.oop;
 
 
 public class RectangularMap extends AbstractWorldMap {
-    public RectangularMap(int width, int height, double jungleRatio, int startEnergy, int moveEnergy, int plantEnergy, int startingAnimals) {
-        super(width, height, jungleRatio, startEnergy, moveEnergy, plantEnergy, startingAnimals);
+    public RectangularMap(int width, int height, double jungleRatio, int startEnergy, int moveEnergy, int plantEnergy, int startingAnimals, boolean isMagic) {
+        super(width, height, jungleRatio, startEnergy, moveEnergy, plantEnergy, startingAnimals, isMagic);
     }
 
     public boolean canMoveTo(Vector2d position) {

@@ -37,13 +37,13 @@ public class Genotype {
        int[] a2Gen = a2.getGenotype().getArray();
        for (int i = 0; i < 32; i++) {
            if (strongerTakesLeft){
-               if (i<a1.getCurrentEnergy()*32/a2.getCurrentEnergy()) {
+               if (i<a1.getCurrentEnergy()*32/(a2.getCurrentEnergy()+a1.getCurrentEnergy())) {
                    genotype[i] = a1Gen[i];
                }else {
                    genotype[i] = a2Gen[i];
                }
            }else {
-               if (i<32-(a1.getCurrentEnergy()*32/a2.getCurrentEnergy())) {
+               if (i<32-(a1.getCurrentEnergy()*32/(a2.getCurrentEnergy()+a1.getCurrentEnergy()))) {
                    genotype[i] = a2Gen[i];
                }else {
                    genotype[i] = a1Gen[i];
@@ -72,5 +72,8 @@ public class Genotype {
         return Objects.hash(Arrays.hashCode(genotype));
    }
 
-
+    @Override
+    public String toString() {
+        return Arrays.toString(genotype);
+    }
 }

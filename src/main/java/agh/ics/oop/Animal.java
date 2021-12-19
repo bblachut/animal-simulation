@@ -14,6 +14,7 @@ public class Animal implements IMapElement{
     private int currentEnergy;
     private int lifetime = 0;
     private int childrenAmount = 0;
+    private boolean isOffspring = false;
 
     public Animal(AbstractWorldMap map, Vector2d initialPosition, Genotype genotype, int startEnergy){
         position = initialPosition;
@@ -77,7 +78,11 @@ public class Animal implements IMapElement{
         Genotype childGenotype = new Genotype(this, other);
         childrenAmount++;
         other.incrementChildren();
-       return new Animal(map, position, childGenotype, childEnergy);
+        Animal child = new Animal(map, position, childGenotype, childEnergy);
+        if (isOffspring || other.isOffspring){
+            child.setOffspring(true);
+        }
+        return child;
     }
 
     public int getOrientation() {
@@ -90,6 +95,18 @@ public class Animal implements IMapElement{
 
     public int getLifetime(){
         return lifetime;
+    }
+
+    public int getChildrenAmount(){
+        return childrenAmount;
+    }
+
+    public void setOffspring(boolean bool){
+        isOffspring = bool;
+    }
+
+    public boolean getIsOffspring(){
+        return isOffspring;
     }
 
     public void incrementChildren(){

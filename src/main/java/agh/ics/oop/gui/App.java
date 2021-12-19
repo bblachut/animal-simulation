@@ -6,9 +6,11 @@ import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -70,14 +72,39 @@ public class App extends Application{
         Vector2d upperRight = mapRec.getUpperRight();
         engineRec = new ThreadedSimulationEngine(mapRec);
         engineFol = new ThreadedSimulationEngine(mapFol);
-        Plotter pltRec = new Plotter(mapRec, engineRec);
-        Plotter pltFol = new Plotter(mapFol, engineFol);
-        imagesArrayRec = mapRec.getImagesArray();
-        imagesArrayFol = mapFol.getImagesArray();
+        Statistics statRec = new Statistics(mapRec, engineRec);
+        Statistics statFol = new Statistics(mapFol, engineFol);
         Button startButtonRec = new Button("stop");
         Button startButtonFol = new Button("stop");
+        Button highlightRec = new Button("highlight animals with dominant genotype");
+        Button highlightFol = new Button("highlight animals with dominant genotype");
         startButtonRec.setAlignment(Pos.CENTER);
         startButtonFol.setAlignment(Pos.CENTER);
+        imagesArrayRec = mapRec.getImagesArray();
+        imagesArrayFol = mapFol.getImagesArray();
+//        for (int x = 0; x < mapRec.getWidth(); x++) {
+//            for (int y = 0; y < mapRec.getHeight(); y++) {
+//                ImageView imageFol = imagesArrayFol[x][y];
+//                ImageView imageRec = imagesArrayFol[x][y];
+//                imageRec.setPickOnBounds(true);
+//                imageFol.setPickOnBounds(true);
+//                imageRec.setOnMouseClicked(event -> {
+//                    System.out.println("chuj");
+//                    if (imageRec.getUserData() != null && imageRec.getUserData().getClass().equals(Animal.class) && startButtonRec.getText().equals("start")){
+//                        mapRec.setTrackedAnimal((Animal) imageRec.getUserData());
+//                        mapRec.getTrackedAnimal().setOffspring(true);
+//                        mapRec.setTrackedAnimalChildren(0);
+//                    }
+//                });
+//                imageFol.setOnMouseClicked(event -> {
+//                    if (imageFol.getUserData() != null && imageFol.getUserData().getClass().equals(Animal.class) && startButtonFol.getText().equals("start")){
+//                        mapFol.setTrackedAnimal((Animal) imageFol.getUserData());
+//                        mapFol.getTrackedAnimal().setOffspring(true);
+//                        mapFol.setTrackedAnimalChildren(0);
+//                    }
+//                });
+//            }
+//        }
         for (int i = 0; i <= upperRight.x-lowerLeft.x+1; i++) {
             gridRec.getColumnConstraints().add(new ColumnConstraints(20));
             gridFol.getColumnConstraints().add(new ColumnConstraints(20));
@@ -87,7 +114,7 @@ public class App extends Application{
             gridFol.getRowConstraints().add(new RowConstraints(20));
         }
         drawFirstMap();
-        startButtonRec.setOnAction(event -> {
+        startButtonRec.setOnMouseClicked(event -> {
             if(startButtonRec.getText().equals("stop")) {
                 engineRec.setShouldRun(false);
                 startButtonRec.setText("start");
@@ -96,7 +123,7 @@ public class App extends Application{
                 engineRec.setShouldRun(true);
             }
         });
-        startButtonFol.setOnAction(event -> {
+        startButtonFol.setOnMouseClicked(event -> {
             if(startButtonFol.getText().equals("stop")) {
                 engineFol.setShouldRun(false);
                 startButtonFol.setText("start");
@@ -105,13 +132,24 @@ public class App extends Application{
                 engineFol.setShouldRun(true);
             }
         });
-        VBox plotsRec = new VBox(pltRec.plotAnimals(),pltRec.plotGrass(),pltRec.plotEnergy(),pltRec.plotLifeTime(),pltRec.plotChildren());
-        VBox plotsFol = new VBox(pltFol.plotAnimals(),pltFol.plotGrass(),pltFol.plotEnergy(),pltFol.plotLifeTime(),pltFol.plotChildren());
+        highlightRec.setOnMouseClicked(event -> {
+            if (startButtonRec.getText().equals("start")) {
+                mapRec.highlight();
+            }
+        });
+        highlightFol.setOnMouseClicked(event -> {
+            if (startButtonFol.getText().equals("start")) {
+                mapFol.highlight();
+            }
+        });
+        VBox plotsRec = new VBox(statRec.plotAnimals(),statRec.plotGrass(),statRec.plotEnergy(),statRec.plotLifeTime(),statRec.plotChildren());
+        VBox plotsFol = new VBox(statFol.plotAnimals(),statFol.plotGrass(),statFol.plotEnergy(),statFol.plotLifeTime(),statFol.plotChildren());
         Thread engineThreadRec = new Thread(engineRec);
         Thread engineThreadFol = new Thread(engineFol);
         engineThreadRec.start();
         engineThreadFol.start();
-        return new Scene(new HBox(plotsRec,new VBox(startButtonRec, gridRec), new VBox(startButtonFol, gridFol), plotsFol), 1300, 1000);
+        return new Scene(new HBox(plotsRec,new VBox(new HBox(startButtonRec, statRec.getDominantGenotypeLabel()), new VBox(gridRec, highlightRec, statRec.trackedStats())),
+                new VBox(new HBox(startButtonFol, statFol.getDominantGenotypeLabel()), new VBox(gridFol, highlightFol, statFol.trackedStats())), plotsFol), 1300, 1000);
     }
 
     private Scene makeMenuScene(){
@@ -139,16 +177,20 @@ public class App extends Application{
         HBox moveEnergy = new HBox(moveEnergyLab, moveEnergyTxt);
         HBox startingAnimals = new HBox(startingAnimalsLab, startingAnimalsTxt);
         Button button = new Button("Start simulation");
+        CheckBox magicRec = new CheckBox();
+        CheckBox magicFol = new CheckBox();
+        magicRec.setText("Should rectangular map be magic?");
+        magicFol.setText("Should folded map be magic?");
 
         button.setOnAction(event -> {
             mapRec = new RectangularMap(Integer.parseInt(widthTxt.getText()), Integer.parseInt(heightTxt.getText()),
                     Double.parseDouble(jungleRatioTxt.getText()), Integer.parseInt(startEnergyTxt.getText()),
                     Integer.parseInt(moveEnergyTxt.getText()), Integer.parseInt(plantEnergyTxt.getText()),
-                    Integer.parseInt(startingAnimalsTxt.getText()));
+                    Integer.parseInt(startingAnimalsTxt.getText()), magicRec.isSelected());
             mapFol = new FoldedMap(Integer.parseInt(widthTxt.getText()), Integer.parseInt(heightTxt.getText()),
                     Double.parseDouble(jungleRatioTxt.getText()), Integer.parseInt(startEnergyTxt.getText()),
                     Integer.parseInt(moveEnergyTxt.getText()), Integer.parseInt(plantEnergyTxt.getText()),
-                    Integer.parseInt(startingAnimalsTxt.getText()));
+                    Integer.parseInt(startingAnimalsTxt.getText()), magicFol.isSelected());
             primaryStage.setScene(makeMapScene());
         });
 
@@ -178,7 +220,7 @@ public class App extends Application{
         moveEnergyTxt.setAlignment(Pos.CENTER_LEFT);
         button.setPrefSize(100, 40);
 
-        VBox menu = new VBox(mapProperties, height, width, jungleRatio, mapElements, startEnergy, moveEnergy, plantEnergy, startingAnimals, button);
+        VBox menu = new VBox(mapProperties, height, width, jungleRatio,new HBox(magicRec, magicFol), mapElements, startEnergy, moveEnergy, plantEnergy, startingAnimals, button);
         return new Scene(menu, 600, 250);
     }
 }

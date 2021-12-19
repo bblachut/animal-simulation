@@ -19,37 +19,47 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
     private final int startEnergy;
     private final int moveEnergy;
     private final int plantEnergy;
+    private final boolean isMagic;
+    private int magicDone = 0;
     private double averageLifetime = 0;
     private double averageChildrenAmount = 0;
     private int deadAnimalsCounter = 0;
     private final ImageView[][] imagesArray;
+    private Animal trackedAnimal;
+    private int trackedAnimalChildren;
+    private int trackedAnimalDescendents;
     protected final Vector2d v1 = new Vector2d(0,0);
     protected final Vector2d v2;
     private final Set<Vector2d> steppeFreeSquares = new HashSet<>();
     private final Set<Vector2d> jungleFreeSquares = new HashSet<>();
-    Set<Animal> livingAnimals = Collections.newSetFromMap(new ConcurrentHashMap<Animal, Boolean>());
-    protected Vector2d[] moveVectors = {new Vector2d(0,1), new Vector2d(1,1),new Vector2d(1,0), new Vector2d(1,-1),
+    private final Set<Animal> livingAnimals = Collections.newSetFromMap(new ConcurrentHashMap<Animal, Boolean>());
+    private final Vector2d[] moveVectors = {new Vector2d(0,1), new Vector2d(1,1),new Vector2d(1,0), new Vector2d(1,-1),
             new Vector2d(0,-1),new Vector2d(-1,-1),new Vector2d(-1,0),new Vector2d(-1,1),};
-    protected ConcurrentHashMap<Vector2d, ArrayList<Animal>> animals = new ConcurrentHashMap<>();
-    protected ConcurrentHashMap<Vector2d, Grass> grass = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Vector2d, ArrayList<Animal>> animals = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Vector2d, Grass> grass = new ConcurrentHashMap<>();
+    private final ConcurrentHashMap<Genotype, Integer> numberOfGenotypes = new ConcurrentHashMap<>();
     private Image transparent;
-    private GuiElementBox guiElementBox = new GuiElementBox();
+    private Image redSquare;
+    private final GuiElementBox guiElementBox = new GuiElementBox();
+
 
 
     {
         try {
             transparent = new Image(new FileInputStream(".\\src\\main\\resources\\transparent.png"));
+            redSquare = new Image(new FileInputStream(".\\src\\main\\resources\\highlighter.png"));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
     }
 
-    public AbstractWorldMap(int width, int height, double jungleRatio, int startEnergy, int moveEnergy, int plantEnergy, int startingAnimals) {
+    public AbstractWorldMap(int width, int height, double jungleRatio, int startEnergy, int moveEnergy, int plantEnergy, int startingAnimals, boolean isMagic) {
         this.startEnergy = startEnergy;
         this.moveEnergy = moveEnergy;
         this.plantEnergy = plantEnergy;
         this.width = width;
         this.height = height;
+        this.isMagic = isMagic;
         v2 = new Vector2d(width-1, height-1);
         jungleLL = new Vector2d((int)((width/2)-((width*Math.sqrt((height*height)*jungleRatio))/(2*height))), (int)((height/2)-(Math.sqrt((height*height)*jungleRatio)/2)));
         jungleUR = new Vector2d((int)((width/2)+((width*Math.sqrt((height*height)*jungleRatio))/(2*height))), (int)((height/2)+(Math.sqrt((height*height)*jungleRatio)/2)));
@@ -91,6 +101,12 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
                 removeFromFreeSquares(animal.getPosition());
             }
             animals.get(animal.getPosition()).add(animal);
+            Genotype genotype = animal.getGenotype();
+            if (numberOfGenotypes.containsKey(genotype)){
+                numberOfGenotypes.put(genotype, numberOfGenotypes.get(genotype)+1);
+            }else {
+                numberOfGenotypes.put(genotype, 1);
+            }
             animal.addObserver(this);
         }
         updateImage(animal.getPosition());
@@ -102,6 +118,11 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
         if (animals.get(position).isEmpty()) {
             animals.remove(position);
             addToFreeSquares(position);
+        }
+        Genotype genotype = animal.getGenotype();
+        numberOfGenotypes.put(genotype, numberOfGenotypes.get(genotype)-1);
+        if (numberOfGenotypes.get(genotype) < 1){
+            numberOfGenotypes.remove(genotype);
         }
         animal.removeObserver(this);
         updateImage(animal.getPosition());
@@ -181,12 +202,19 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
                 list.sort(Comparator.comparingInt((Animal a) -> -a.getCurrentEnergy()));
                 if (list.get(0).getCurrentEnergy()>=startEnergy/2 && list.get(1).getCurrentEnergy()>=startEnergy/2){
                     Animal child = list.get(0).makeChild(list.get(1));
+                    if (list.get(0) == trackedAnimal || list.get(1) == trackedAnimal){
+                        trackedAnimalChildren++;
+                    }
+                    if (list.get(0).getIsOffspring() || list.get(1).getIsOffspring()){
+                        trackedAnimalDescendents++;
+                    }
                     averageChildrenAmount += 2.0/livingAnimals.size();
                     place(child);
                     livingAnimals.add(child);
                 }
             }
         }
+        doMagic();
     }
 
     public void animalsMove(){
@@ -203,13 +231,13 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
             Animal animal = it.next();
             if(animal.getCurrentEnergy()<=0){
                 averageLifetime = averageLifetime*deadAnimalsCounter/(deadAnimalsCounter+1)+(double)animal.getLifetime()/(deadAnimalsCounter+1);
-                averageChildrenAmount = (averageChildrenAmount-1.0/livingAnimals.size())*((double) livingAnimals.size()/(livingAnimals.size()-1));
+                averageChildrenAmount = (averageChildrenAmount-(double) animal.getChildrenAmount()/livingAnimals.size())*((double) livingAnimals.size()/(livingAnimals.size()-1));
                 deadAnimalsCounter++;
                 remove(animal);
                 it.remove();
             }
         }
-//        System.out.println(livingAnimals.size());
+        doMagic();
     }
 
     private void removeFromFreeSquares(Vector2d position){
@@ -234,6 +262,19 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 ImageView image = new ImageView(transparent);
+                image.setPickOnBounds(true);
+                image.setOnMouseClicked(event -> {
+                    System.out.println("chuj");
+                    if (image.getUserData() != null && image.getUserData().getClass().equals(Animal.class)){
+                        setTrackedAnimal((Animal) image.getUserData());
+                        trackedAnimalChildren = 0;
+                        trackedAnimalDescendents = 0;
+                        for (Animal animal:livingAnimals){
+                            animal.setOffspring(false);
+                        }
+                        getTrackedAnimal().setOffspring(true);
+                    }
+                });
                 image.setFitWidth(18);
                 image.setFitHeight(18);
                 imagesArray[x][y] = image;
@@ -247,18 +288,64 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
                 list.sort(Comparator.comparingInt((Animal a) -> -a.getCurrentEnergy()));
                 Animal animal = list.get(0);
                 Platform.runLater(() -> {
-                imagesArray[position.x][position.y].setImage(guiElementBox.getBoxElement(animal));
+                    imagesArray[position.x][position.y].setImage(guiElementBox.getBoxElement(animal));
+                    imagesArray[position.x][position.y].setOpacity((double) animal.getCurrentEnergy()/(2*startEnergy));
+                    imagesArray[position.x][position.y].setUserData(animal);
                 });
             }else if (grass.containsKey(position)){
                 Grass grass1 = grass.get(position);
                 Platform.runLater(() -> {
-                imagesArray[position.x][position.y].setImage(guiElementBox.getBoxElement(grass1));
+                    imagesArray[position.x][position.y].setImage(guiElementBox.getBoxElement(grass1));
+                    imagesArray[position.x][position.y].setOpacity(1);
+                    imagesArray[position.x][position.y].setUserData(grass1);
                 });
             }else {
                 Platform.runLater(() -> {
                     imagesArray[position.x][position.y].setImage(transparent);
+                    imagesArray[position.x][position.y].setUserData(null);
                 });
             }
+    }
+
+    public void doMagic(){
+        if (isMagic && magicDone<3 && livingAnimals.size() == 5){
+            magicDone++;
+            Random rng = new Random();
+            for(Animal animal: livingAnimals){
+                if (livingAnimals.size() < width*height){
+                    boolean shouldShuffle = true;
+                    while (shouldShuffle) {
+                        int x = rng.nextInt(width);
+                        int y = rng.nextInt(height);
+                        Vector2d position = new Vector2d(x, y);
+                        if (!animals.containsKey(position)){
+                            shouldShuffle = false;
+                            removeFromFreeSquares(position);
+                            Animal animalCopy = new Animal(this, position, animal.getGenotype(), startEnergy);
+                            place(animalCopy);
+                            livingAnimals.add(animalCopy);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void highlight(){
+        for (Animal animal:livingAnimals) {
+            if (animal.getGenotype().equals(Collections.max(numberOfGenotypes.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey())){
+                Platform.runLater(() -> {
+                    imagesArray[animal.getPosition().x][animal.getPosition().y].setImage(redSquare);
+                    imagesArray[0][0].setOnMouseClicked(event -> {
+                        System.out.println("chuj");
+                    });
+                });
+            }
+        }
+    }
+
+    public int getOffspring(){
+        return trackedAnimalDescendents;
     }
 
     public Vector2d getMoveVector(int orientation){
@@ -306,6 +393,31 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
     public double getAverageLifetime() {
         return averageLifetime;
     }
+
+    public double getAverageChildrenAmount(){
+        return averageChildrenAmount;
+    }
+
+    public String getDominantGenotype(){
+        return Collections.max(numberOfGenotypes.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).toString();
+    }
+
+    public Animal getTrackedAnimal(){
+        return trackedAnimal;
+    }
+
+    public void setTrackedAnimal(Animal animal){
+        trackedAnimal = animal;
+    }
+
+    public int getTrackedAnimalChildren() {
+        return trackedAnimalChildren;
+    }
+
+    public void setTrackedAnimalChildren(int trackedAnimalChildren) {
+        this.trackedAnimalChildren = trackedAnimalChildren;
+    }
+
 
     public abstract boolean canMoveTo(Vector2d position);
 
