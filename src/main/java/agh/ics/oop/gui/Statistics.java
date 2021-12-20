@@ -111,6 +111,19 @@ public class Statistics implements IEngineObserver {
         return dominantGenotypeLabel;
     }
 
+    public void updateStats(){
+        if (map.getTrackedAnimal() != null){
+            Animal tracked = map.getTrackedAnimal();
+            trackedChildren.setText("Animal has "+map.getTrackedAnimalChildren()+" children");
+            trackedOffspring.setText("Animal has "+map.getOffspring()+ " descendants");
+            if (tracked.getCurrentEnergy()<=0 && dayOfDeath.getText().equals("")){
+                dayOfDeath.setText("Animal died at day "+dayCounter);
+            }else if (tracked.getCurrentEnergy()>0){
+                dayOfDeath.setText("");
+            }
+        }
+    }
+
     @Override
     public void dayFinished() {
         dayCounter++;
@@ -121,16 +134,7 @@ public class Statistics implements IEngineObserver {
             lifetime.getData().add(new XYChart.Data(dayCounter, map.getAverageLifetime()));
             children.getData().add(new XYChart.Data(dayCounter, map.getAverageChildrenAmount()));
             dominantGenotypeLabel.setText(map.getDominantGenotype());
-            if (map.getTrackedAnimal() != null){
-                Animal tracked = map.getTrackedAnimal();
-                trackedChildren.setText("Animal has "+map.getTrackedAnimalChildren()+" children");
-                trackedOffspring.setText("Animal has "+map.getOffspring()+ " descendants");
-                if (tracked.getCurrentEnergy()<=0 && dayOfDeath.getText().equals("")){
-                    dayOfDeath.setText("Animal died at day "+dayCounter);
-                }else if (tracked.getCurrentEnergy()>0){
-                    dayOfDeath.setText("");
-                }
-            }
+            updateStats();
         });
     }
 }

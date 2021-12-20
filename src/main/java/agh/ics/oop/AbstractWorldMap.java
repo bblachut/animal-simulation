@@ -53,7 +53,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
         }
     }
 
-    public AbstractWorldMap(int width, int height, double jungleRatio, int startEnergy, int moveEnergy, int plantEnergy, int startingAnimals, boolean isMagic) {
+    public AbstractWorldMap(int width, int height, double jungleRatio, int startEnergy, int moveEnergy, int plantEnergy, int startingAnimals, boolean isMagic, ImageView[][] imagesArray) {
         this.startEnergy = startEnergy;
         this.moveEnergy = moveEnergy;
         this.plantEnergy = plantEnergy;
@@ -69,8 +69,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
                 addToFreeSquares(v);
             }
         }
-        imagesArray = new ImageView[width][height];
-        setUpImageArray();
+        this.imagesArray = imagesArray;
         placeStartingAnimals(startingAnimals);
     }
 
@@ -258,30 +257,6 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
         }
     }
 
-    private void setUpImageArray(){
-        for (int x = 0; x < width; x++) {
-            for (int y = 0; y < height; y++) {
-                ImageView image = new ImageView(transparent);
-                image.setPickOnBounds(true);
-                image.setOnMouseClicked(event -> {
-                    System.out.println("chuj");
-                    if (image.getUserData() != null && image.getUserData().getClass().equals(Animal.class)){
-                        setTrackedAnimal((Animal) image.getUserData());
-                        trackedAnimalChildren = 0;
-                        trackedAnimalDescendents = 0;
-                        for (Animal animal:livingAnimals){
-                            animal.setOffspring(false);
-                        }
-                        getTrackedAnimal().setOffspring(true);
-                    }
-                });
-                image.setFitWidth(18);
-                image.setFitHeight(18);
-                imagesArray[x][y] = image;
-            }
-        }
-    }
-
     private void updateImage(Vector2d position){
             if (animals.containsKey(position)){
                 ArrayList<Animal> list = animals.get(position);
@@ -416,6 +391,13 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
 
     public void setTrackedAnimalChildren(int trackedAnimalChildren) {
         this.trackedAnimalChildren = trackedAnimalChildren;
+    }
+
+    public void clearOffspring(){
+        trackedAnimalDescendents = 0;
+        for (Animal animal:livingAnimals){
+            animal.setOffspring(false);
+        }
     }
 
 

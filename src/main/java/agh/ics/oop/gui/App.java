@@ -9,21 +9,33 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 
 public class App extends Application{
     private RectangularMap mapRec;
     private FoldedMap mapFol;
     private ImageView[][] imagesArrayRec;
     private ImageView[][] imagesArrayFol;
+    private Image transparent;
     private Stage primaryStage;
     private final GridPane gridRec = new GridPane();
     private final GridPane gridFol = new GridPane();
     private ThreadedSimulationEngine engineRec;
     private ThreadedSimulationEngine engineFol;
+    {
+        try {
+            transparent = new Image(new FileInputStream(".\\src\\main\\resources\\transparent.png"));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     @Override
     public void start(Stage primaryStage){
@@ -80,31 +92,8 @@ public class App extends Application{
         Button highlightFol = new Button("highlight animals with dominant genotype");
         startButtonRec.setAlignment(Pos.CENTER);
         startButtonFol.setAlignment(Pos.CENTER);
-        imagesArrayRec = mapRec.getImagesArray();
-        imagesArrayFol = mapFol.getImagesArray();
-//        for (int x = 0; x < mapRec.getWidth(); x++) {
-//            for (int y = 0; y < mapRec.getHeight(); y++) {
-//                ImageView imageFol = imagesArrayFol[x][y];
-//                ImageView imageRec = imagesArrayFol[x][y];
-//                imageRec.setPickOnBounds(true);
-//                imageFol.setPickOnBounds(true);
-//                imageRec.setOnMouseClicked(event -> {
-//                    System.out.println("chuj");
-//                    if (imageRec.getUserData() != null && imageRec.getUserData().getClass().equals(Animal.class) && startButtonRec.getText().equals("start")){
-//                        mapRec.setTrackedAnimal((Animal) imageRec.getUserData());
-//                        mapRec.getTrackedAnimal().setOffspring(true);
-//                        mapRec.setTrackedAnimalChildren(0);
-//                    }
-//                });
-//                imageFol.setOnMouseClicked(event -> {
-//                    if (imageFol.getUserData() != null && imageFol.getUserData().getClass().equals(Animal.class) && startButtonFol.getText().equals("start")){
-//                        mapFol.setTrackedAnimal((Animal) imageFol.getUserData());
-//                        mapFol.getTrackedAnimal().setOffspring(true);
-//                        mapFol.setTrackedAnimalChildren(0);
-//                    }
-//                });
-//            }
-//        }
+        setUpImageArray(mapRec, imagesArrayRec, startButtonRec, statRec);
+        setUpImageArray(mapFol, imagesArrayFol, startButtonFol, statFol);
         for (int i = 0; i <= upperRight.x-lowerLeft.x+1; i++) {
             gridRec.getColumnConstraints().add(new ColumnConstraints(20));
             gridFol.getColumnConstraints().add(new ColumnConstraints(20));
@@ -183,14 +172,16 @@ public class App extends Application{
         magicFol.setText("Should folded map be magic?");
 
         button.setOnAction(event -> {
+            imagesArrayRec = new ImageView[Integer.parseInt(widthTxt.getText())][Integer.parseInt(heightTxt.getText())];
+            imagesArrayFol = new ImageView[Integer.parseInt(widthTxt.getText())][Integer.parseInt(heightTxt.getText())];
             mapRec = new RectangularMap(Integer.parseInt(widthTxt.getText()), Integer.parseInt(heightTxt.getText()),
                     Double.parseDouble(jungleRatioTxt.getText()), Integer.parseInt(startEnergyTxt.getText()),
                     Integer.parseInt(moveEnergyTxt.getText()), Integer.parseInt(plantEnergyTxt.getText()),
-                    Integer.parseInt(startingAnimalsTxt.getText()), magicRec.isSelected());
+                    Integer.parseInt(startingAnimalsTxt.getText()), magicRec.isSelected(), imagesArrayRec);
             mapFol = new FoldedMap(Integer.parseInt(widthTxt.getText()), Integer.parseInt(heightTxt.getText()),
                     Double.parseDouble(jungleRatioTxt.getText()), Integer.parseInt(startEnergyTxt.getText()),
                     Integer.parseInt(moveEnergyTxt.getText()), Integer.parseInt(plantEnergyTxt.getText()),
-                    Integer.parseInt(startingAnimalsTxt.getText()), magicFol.isSelected());
+                    Integer.parseInt(startingAnimalsTxt.getText()), magicFol.isSelected(), imagesArrayFol);
             primaryStage.setScene(makeMapScene());
         });
 
@@ -222,5 +213,26 @@ public class App extends Application{
 
         VBox menu = new VBox(mapProperties, height, width, jungleRatio,new HBox(magicRec, magicFol), mapElements, startEnergy, moveEnergy, plantEnergy, startingAnimals, button);
         return new Scene(menu, 600, 250);
+    }
+
+    private void setUpImageArray(AbstractWorldMap map, ImageView[][] imagesArray, Button startButton, Statistics stats){
+        for (int x = 0; x < mapRec.getWidth(); x++) {
+            for (int y = 0; y < mapRec.getHeight(); y++) {
+                ImageView image = new ImageView(transparent);
+                image.setPickOnBounds(true);
+                image.setOnMouseClicked(event -> {
+                    if (image.getUserData() != null && image.getUserData().getClass().equals(Animal.class) && startButton.getText().equals("start")){
+                        map.setTrackedAnimal((Animal) image.getUserData());
+                        map.setTrackedAnimalChildren(0);
+                        map.clearOffspring();
+                        map.getTrackedAnimal().setOffspring(true);
+                        stats.updateStats();
+                    }
+                });
+                image.setFitWidth(18);
+                image.setFitHeight(18);
+                imagesArray[x][y] = image;
+            }
+        }
     }
 }
