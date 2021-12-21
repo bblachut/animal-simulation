@@ -16,6 +16,11 @@ public class ThreadedSimulationEngine implements Runnable{
 
 
     public void run(){
+        try {
+            Thread.sleep(500);//needed to display graphs from day 0
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         while (true) {
             if (shouldRun) {
                 map.removeDead();

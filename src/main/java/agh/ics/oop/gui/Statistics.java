@@ -5,11 +5,10 @@ import agh.ics.oop.Animal;
 import agh.ics.oop.interfaces.IEngineObserver;
 import agh.ics.oop.ThreadedSimulationEngine;
 import javafx.application.Platform;
-import javafx.scene.chart.LineChart;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
+import javafx.scene.chart.*;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Paint;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -19,16 +18,16 @@ import java.util.ArrayList;
 public class Statistics implements IEngineObserver {
     private int dayCounter = 1;
     private final AbstractWorldMap map;
-    private XYChart.Series animals;
-    private XYChart.Series grass;
-    private XYChart.Series energy;
-    private XYChart.Series lifetime;
-    private XYChart.Series children;
+    private final XYChart.Series<Number, Number> animals = new XYChart.Series<>();
+    private final XYChart.Series<Number, Number> grass = new XYChart.Series<>();
+    private final XYChart.Series<Number, Number> energy = new XYChart.Series<>();
+    private final XYChart.Series<Number, Number> lifetime = new XYChart.Series<>();
+    private final XYChart.Series<Number, Number> children = new XYChart.Series<>();
     private final Label dominantGenotypeLabel = new Label();
-    private Label trackedOffspring = new Label();
-    private Label trackedChildren = new Label();
-    private Label dayOfDeath = new Label();
-    private ArrayList<String> statsToSave = new ArrayList<>();
+    private final Label trackedOffspring = new Label();
+    private final Label trackedChildren = new Label();
+    private final Label dayOfDeath = new Label();
+    private final  ArrayList<String> statsToSave = new ArrayList<>();
     private double averageAnimalAmount = 0;
     private double averageGrassAmount = 0;
     private double averageAverageEnergy = 0;
@@ -41,71 +40,41 @@ public class Statistics implements IEngineObserver {
         engine.addObserver(this);
     }
 
-    public LineChart plotAnimals(){
-        NumberAxis xAxis = new NumberAxis();
-        NumberAxis yAxis = new NumberAxis();
-        LineChart lineChart = new LineChart(xAxis,yAxis);
-        animals = new XYChart.Series();
-        lineChart.getData().add(animals);
-        lineChart.setAnimated(false);
-        lineChart.setCreateSymbols(false);
-        lineChart.setPrefHeight(100);
-        lineChart.setPrefWidth(100);
+    public LineChart<Number, Number> plotAnimals(){
+        return plot(animals);
+    }
+
+    public LineChart<Number, Number> plotGrass(){
+        LineChart<Number, Number> lineChart = plot(grass);
+        grass.getNode().lookup(".chart-series-line").setStyle("-fx-stroke: #0FBA19");;
         return lineChart;
     }
 
-    public LineChart plotGrass(){
-        NumberAxis xAxis = new NumberAxis();
-        NumberAxis yAxis = new NumberAxis();
-        LineChart lineChart = new LineChart(xAxis,yAxis);
-        grass = new XYChart.Series();
-        lineChart.getData().add(grass);
-        lineChart.setAnimated(false);
-        lineChart.setCreateSymbols(false);
-        grass.getNode().lookup(".chart-series-line").setStyle("-fx-stroke: #0FBA19");
-        lineChart.setPrefHeight(100);
-        lineChart.setPrefWidth(100);
-        return lineChart;
-    }
-
-    public LineChart plotEnergy(){
-        NumberAxis xAxis = new NumberAxis();
-        NumberAxis yAxis = new NumberAxis();
-        LineChart lineChart = new LineChart(xAxis,yAxis);
-        energy = new XYChart.Series();
-        lineChart.getData().add(energy);
-        lineChart.setAnimated(false);
-        lineChart.setCreateSymbols(false);
-        grass.getData().add(new XYChart.Data(0, 0));
+    public LineChart<Number, Number> plotEnergy(){
+        LineChart<Number, Number> lineChart = plot(energy);
         energy.getNode().lookup(".chart-series-line").setStyle("-fx-stroke: #921AB9");
-        lineChart.setPrefHeight(100);
-        lineChart.setPrefWidth(100);
         return lineChart;
     }
 
-    public LineChart plotLifeTime(){
-        NumberAxis xAxis = new NumberAxis();
-        NumberAxis yAxis = new NumberAxis();
-        LineChart lineChart = new LineChart(xAxis,yAxis);
-        lifetime = new XYChart.Series();
-        lineChart.getData().add(lifetime);
-        lineChart.setAnimated(false);
-        lineChart.setCreateSymbols(false);
+    public LineChart<Number, Number> plotLifeTime(){
+        LineChart<Number, Number> lineChart = plot(lifetime);
         lifetime.getNode().lookup(".chart-series-line").setStyle("-fx-stroke: #FF0000");
-        lineChart.setPrefHeight(100);
-        lineChart.setPrefWidth(100);
         return lineChart;
     }
 
-    public LineChart plotChildren(){
+    public LineChart<Number, Number> plotChildren(){
+        LineChart<Number, Number> lineChart = plot(children);
+        children.getNode().lookup(".chart-series-line").setStyle("-fx-stroke: #FFF300");
+        return lineChart;
+    }
+
+    private LineChart<Number, Number> plot(XYChart.Series<Number, Number> series){
         NumberAxis xAxis = new NumberAxis();
         NumberAxis yAxis = new NumberAxis();
-        LineChart lineChart = new LineChart(xAxis,yAxis);
-        children = new XYChart.Series();
-        lineChart.getData().add(children);
+        LineChart<Number, Number> lineChart = new LineChart<>(xAxis,yAxis);
+        lineChart.getData().add(series);
         lineChart.setAnimated(false);
         lineChart.setCreateSymbols(false);
-        children.getNode().lookup(".chart-series-line").setStyle("-fx-stroke: #FFF300");
         lineChart.setPrefHeight(100);
         lineChart.setPrefWidth(100);
         return lineChart;
@@ -163,11 +132,11 @@ public class Statistics implements IEngineObserver {
     @Override
     public void dayFinished() {
         Platform.runLater(() -> {
-            animals.getData().add(new XYChart.Data(dayCounter, map.getAnimalsAmount()));
-            grass.getData().add(new XYChart.Data(dayCounter, map.getGrassAmount()));
-            energy.getData().add(new XYChart.Data(dayCounter, Math.round(map.getAverageEnergy()*100.0)/100.0));
-            lifetime.getData().add(new XYChart.Data(dayCounter, Math.round(map.getAverageLifetime()*100.0)/100.0));
-            children.getData().add(new XYChart.Data(dayCounter, Math.round(map.getAverageChildrenAmount()*100.0)/100.0));
+            animals.getData().add(new XYChart.Data<>(dayCounter, map.getAnimalsAmount()));
+            grass.getData().add(new XYChart.Data<>(dayCounter, map.getGrassAmount()));
+            energy.getData().add(new XYChart.Data<>(dayCounter, Math.round(map.getAverageEnergy()*100.0)/100.0));
+            lifetime.getData().add(new XYChart.Data<>(dayCounter, Math.round(map.getAverageLifetime()*100.0)/100.0));
+            children.getData().add(new XYChart.Data<>(dayCounter, Math.round(map.getAverageChildrenAmount()*100.0)/100.0));
             dominantGenotypeLabel.setText(map.getDominantGenotype());
             updateTrackedStats();
             addDailyStats();
