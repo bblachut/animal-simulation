@@ -11,7 +11,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
@@ -90,6 +89,8 @@ public class App extends Application{
         Button startButtonFol = new Button("stop");
         Button highlightRec = new Button("highlight animals with dominant genotype");
         Button highlightFol = new Button("highlight animals with dominant genotype");
+        Button saveStatsRec = new Button("Save statistics to file");
+        Button saveStatsFol = new Button("Save statistics to file");
         startButtonRec.setAlignment(Pos.CENTER);
         startButtonFol.setAlignment(Pos.CENTER);
         setUpImageArray(mapRec, imagesArrayRec, startButtonRec, statRec);
@@ -131,14 +132,24 @@ public class App extends Application{
                 mapFol.highlight();
             }
         });
+        saveStatsRec.setOnMouseClicked(event -> {
+            if (startButtonRec.getText().equals("start")) {
+                statRec.savetoFile();
+            }
+        });
+        saveStatsFol.setOnMouseClicked(event -> {
+            if (startButtonFol.getText().equals("start")) {
+                statFol.savetoFile();
+            }
+        });
         VBox plotsRec = new VBox(statRec.plotAnimals(),statRec.plotGrass(),statRec.plotEnergy(),statRec.plotLifeTime(),statRec.plotChildren());
         VBox plotsFol = new VBox(statFol.plotAnimals(),statFol.plotGrass(),statFol.plotEnergy(),statFol.plotLifeTime(),statFol.plotChildren());
         Thread engineThreadRec = new Thread(engineRec);
         Thread engineThreadFol = new Thread(engineFol);
         engineThreadRec.start();
         engineThreadFol.start();
-        return new Scene(new HBox(plotsRec,new VBox(new Label("Dominant genotype"), new HBox(startButtonRec, statRec.getDominantGenotypeLabel()), gridRec, highlightRec, statRec.trackedStats()),
-                new VBox(new Label("Dominant genotype"), new HBox(startButtonFol, statFol.getDominantGenotypeLabel()), gridFol, highlightFol, statFol.trackedStats()), plotsFol), 1300, 1000);
+        return new Scene(new HBox(plotsRec,new VBox(new Label("Dominant genotype"), new HBox(startButtonRec, statRec.getDominantGenotypeLabel()), gridRec, highlightRec, saveStatsRec, statRec.trackedStats()),
+                new VBox(new Label("Dominant genotype"), new HBox(startButtonFol, statFol.getDominantGenotypeLabel()), gridFol, highlightFol, saveStatsFol, statFol.trackedStats()), plotsFol), 1300, 1000);
     }
 
     private Scene makeMenuScene(){
@@ -226,7 +237,7 @@ public class App extends Application{
                         map.setTrackedAnimalChildren(0);
                         map.clearOffspring();
                         map.getTrackedAnimal().setOffspring(true);
-                        stats.updateStats();
+                        stats.updateTrackedStats();
                     }
                 });
                 image.setFitWidth(18);

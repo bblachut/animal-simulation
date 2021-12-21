@@ -1,9 +1,12 @@
 package agh.ics.oop;
 
+import agh.ics.oop.interfaces.IMapElement;
+import agh.ics.oop.interfaces.IPositionChangeObserver;
+
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Animal implements IMapElement{
+public class Animal implements IMapElement {
     private int orientation;
     private Vector2d position;
     private final AbstractWorldMap map;

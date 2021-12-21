@@ -1,6 +1,8 @@
 package agh.ics.oop;
 
 
+import agh.ics.oop.interfaces.IEngineObserver;
+
 import java.util.ArrayList;
 
 public class ThreadedSimulationEngine implements Runnable{

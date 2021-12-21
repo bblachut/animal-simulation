@@ -2,15 +2,19 @@ package agh.ics.oop.gui;
 
 import agh.ics.oop.AbstractWorldMap;
 import agh.ics.oop.Animal;
-import agh.ics.oop.IEngineObserver;
+import agh.ics.oop.interfaces.IEngineObserver;
 import agh.ics.oop.ThreadedSimulationEngine;
 import javafx.application.Platform;
 import javafx.scene.chart.LineChart;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
-import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
+
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.ArrayList;
 
 public class Statistics implements IEngineObserver {
     private int dayCounter = 1;
@@ -24,6 +28,13 @@ public class Statistics implements IEngineObserver {
     private Label trackedOffspring = new Label();
     private Label trackedChildren = new Label();
     private Label dayOfDeath = new Label();
+    private ArrayList<String> statsToSave = new ArrayList<>();
+    private double averageAnimalAmount = 0;
+    private double averageGrassAmount = 0;
+    private double averageAverageEnergy = 0;
+    private double averageAverageLifetime = 0;
+    private double averageAverageChildren = 0;
+
 
     public Statistics(AbstractWorldMap map, ThreadedSimulationEngine engine){
         this.map = map;
@@ -111,7 +122,7 @@ public class Statistics implements IEngineObserver {
         return dominantGenotypeLabel;
     }
 
-    public void updateStats(){
+    public void updateTrackedStats(){
         if (map.getTrackedAnimal() != null){
             Animal tracked = map.getTrackedAnimal();
             trackedChildren.setText("Animal has "+map.getTrackedAnimalChildren()+" children");
@@ -124,17 +135,44 @@ public class Statistics implements IEngineObserver {
         }
     }
 
+    private void addDailyStats(){
+        String stats = map.getAnimalsAmount() + "," + map.getGrassAmount() + "," + Math.round(map.getAverageEnergy()*100.0)/100.0 + ","
+                + Math.round(map.getAverageLifetime()*100.0)/100.0 + "," + Math.round(map.getAverageChildrenAmount()*100.0)/100.0;
+        averageAnimalAmount = Math.round((averageAnimalAmount*(dayCounter-1)/dayCounter + (double) map.getAnimalsAmount()/dayCounter)*100.0)/100.0;
+        averageGrassAmount = Math.round((averageGrassAmount*(dayCounter-1)/dayCounter + (double) map.getGrassAmount()/dayCounter)*100.0)/100.0;
+        averageAverageEnergy = Math.round((averageAverageEnergy*(dayCounter-1)/dayCounter + map.getAverageEnergy()/dayCounter)*100.0)/100.0;
+        averageAverageLifetime = Math.round((averageAverageLifetime*(dayCounter-1)/dayCounter + map.getAverageLifetime()/dayCounter)*100.0)/100.0;
+        averageAverageChildren = Math.round((averageAverageChildren*(dayCounter-1)/dayCounter + map.getAverageChildrenAmount()/dayCounter)*100.0)/100.0;
+        statsToSave.add(stats);
+    }
+
+    public void savetoFile(){
+        try {
+            BufferedWriter writer = new BufferedWriter(new FileWriter("simulationStats.txt", false));
+            for (String str: statsToSave) {
+                writer.append(str);
+                writer.newLine();
+            }
+            writer.append(averageAnimalAmount+","+averageGrassAmount+","+averageAverageEnergy+","+averageAverageLifetime+","+averageAverageChildren);
+            writer.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     @Override
     public void dayFinished() {
-        dayCounter++;
         Platform.runLater(() -> {
             animals.getData().add(new XYChart.Data(dayCounter, map.getAnimalsAmount()));
             grass.getData().add(new XYChart.Data(dayCounter, map.getGrassAmount()));
-            energy.getData().add(new XYChart.Data(dayCounter, map.getEnergySum()));
-            lifetime.getData().add(new XYChart.Data(dayCounter, map.getAverageLifetime()));
-            children.getData().add(new XYChart.Data(dayCounter, map.getAverageChildrenAmount()));
+            energy.getData().add(new XYChart.Data(dayCounter, Math.round(map.getAverageEnergy()*100.0)/100.0));
+            lifetime.getData().add(new XYChart.Data(dayCounter, Math.round(map.getAverageLifetime()*100.0)/100.0));
+            children.getData().add(new XYChart.Data(dayCounter, Math.round(map.getAverageChildrenAmount()*100.0)/100.0));
             dominantGenotypeLabel.setText(map.getDominantGenotype());
-            updateStats();
+            updateTrackedStats();
+            addDailyStats();
         });
+        dayCounter++;
+
     }
 }

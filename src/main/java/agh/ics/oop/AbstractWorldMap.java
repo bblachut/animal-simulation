@@ -1,6 +1,7 @@
 package agh.ics.oop;
 
 import agh.ics.oop.gui.GuiElementBox;
+import agh.ics.oop.interfaces.IPositionChangeObserver;
 import javafx.application.Platform;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -11,7 +12,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
-public abstract class AbstractWorldMap implements IPositionChangeObserver{
+public abstract class AbstractWorldMap implements IPositionChangeObserver {
     private final Vector2d jungleLL;
     private final Vector2d jungleUR;
     private final int width;
@@ -230,7 +231,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
             Animal animal = it.next();
             if(animal.getCurrentEnergy()<=0){
                 averageLifetime = averageLifetime*deadAnimalsCounter/(deadAnimalsCounter+1)+(double)animal.getLifetime()/(deadAnimalsCounter+1);
-                averageChildrenAmount = (averageChildrenAmount-(double) animal.getChildrenAmount()/livingAnimals.size())*((double) livingAnimals.size()/(livingAnimals.size()-1));
+                averageChildrenAmount = (averageChildrenAmount-(double) animal.getChildrenAmount()/livingAnimals.size())*(double) livingAnimals.size()/(livingAnimals.size()-1);
                 deadAnimalsCounter++;
                 remove(animal);
                 it.remove();
@@ -355,14 +356,14 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver{
         return grass.size();
     }
 
-    public int getEnergySum(){
+    public double getAverageEnergy(){
         int energySum = 0;
         for(Animal animal:livingAnimals){
             if (animal.getCurrentEnergy() > 0) {
                 energySum += animal.getCurrentEnergy();
             }
         }
-        return energySum;
+        return (double)energySum/livingAnimals.size();
     }
 
     public double getAverageLifetime() {

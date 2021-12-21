@@ -1,7 +1,7 @@
 package agh.ics.oop.gui;
 import agh.ics.oop.Animal;
 import agh.ics.oop.Grass;
-import agh.ics.oop.IMapElement;
+import agh.ics.oop.interfaces.IMapElement;
 import javafx.scene.image.Image;
 
 import java.io.FileInputStream;
