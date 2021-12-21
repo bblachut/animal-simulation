@@ -112,7 +112,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
         updateImage(animal.getPosition());
     }
 
-    public void remove(Animal animal){
+    public void removeAnimal(Animal animal){
         Vector2d position = animal.getPosition();
         animals.get(position).remove(animal);
         if (animals.get(position).isEmpty()) {
@@ -233,7 +233,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
                 averageLifetime = averageLifetime*deadAnimalsCounter/(deadAnimalsCounter+1)+(double)animal.getLifetime()/(deadAnimalsCounter+1);
                 averageChildrenAmount = (averageChildrenAmount-(double) animal.getChildrenAmount()/livingAnimals.size())*(double) livingAnimals.size()/(livingAnimals.size()-1);
                 deadAnimalsCounter++;
-                remove(animal);
+                removeAnimal(animal);
                 it.remove();
             }
         }
@@ -312,9 +312,6 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
             if (animal.getGenotype().equals(Collections.max(numberOfGenotypes.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey())){
                 Platform.runLater(() -> {
                     imagesArray[animal.getPosition().x][animal.getPosition().y].setImage(redSquare);
-                    imagesArray[0][0].setOnMouseClicked(event -> {
-                        System.out.println("chuj");
-                    });
                 });
             }
         }
@@ -334,10 +331,6 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
 
     public int getHeight() {
         return height;
-    }
-
-    public ImageView[][] getImagesArray(){
-        return imagesArray;
     }
 
     public Vector2d getLowerLeft(){

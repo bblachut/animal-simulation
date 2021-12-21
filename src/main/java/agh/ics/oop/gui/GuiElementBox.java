@@ -9,7 +9,6 @@ import java.io.FileNotFoundException;
 
 public class GuiElementBox {
     private  Image[] images;
-
     {
         try {
             images = new Image[]{new Image(new FileInputStream(".\\src\\main\\resources\\grass.png")),
@@ -28,10 +27,8 @@ public class GuiElementBox {
     }
 
     public Image getBoxElement(IMapElement element){
-
         if (element.getClass().equals(Grass.class)){
             return images[0];
-
         }
         if (element.getClass().equals(Animal.class)){
             switch (((Animal) element).getOrientation()){

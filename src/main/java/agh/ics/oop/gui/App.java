@@ -153,8 +153,10 @@ public class App extends Application{
         Thread engineThreadFol = new Thread(engineFol);
         engineThreadRec.start();
         engineThreadFol.start();
-        return new Scene(new HBox(plotsRec,new VBox(new Label("Dominant genotype"), new HBox(startButtonRec, statRec.getDominantGenotypeLabel()), gridRec, highlightRec, saveStatsRec, statRec.trackedStats()),
-                new VBox(new Label("Dominant genotype"), new HBox(startButtonFol, statFol.getDominantGenotypeLabel()), gridFol, highlightFol, saveStatsFol, statFol.trackedStats()), plotsFol), 1300, 1000);
+        return new Scene(new HBox(plotsRec,new VBox(new Label("Dominant genotype"), new HBox(startButtonRec, statRec.getDominantGenotypeLabel()),
+                gridRec, highlightRec, saveStatsRec, statRec.trackedStats()),
+                new VBox(new Label("Dominant genotype"), new HBox(startButtonFol, statFol.getDominantGenotypeLabel()),
+                        gridFol, highlightFol, saveStatsFol, statFol.trackedStats()), plotsFol), 1920, 1080);
     }
 
     private Scene makeMenuScene(){
@@ -166,13 +168,13 @@ public class App extends Application{
         Label moveEnergyLab = new Label("Energy cost of move");
         Label plantEnergyLab = new Label("Energy given by plants");
         Label startingAnimalsLab = new Label("Amount of animals starting on the map");
-        TextField heightTxt = new TextField("20");
-        TextField widthTxt = new TextField("20");
+        TextField heightTxt = new TextField("30");
+        TextField widthTxt = new TextField("30");
         TextField jungleRatioTxt = new TextField("0.1");
-        TextField startEnergyTxt = new TextField("40");
+        TextField startEnergyTxt = new TextField("60");
         TextField moveEnergyTxt = new TextField("1");
-        TextField plantEnergyTxt = new TextField("20");
-        TextField startingAnimalsTxt = new TextField("15");
+        TextField plantEnergyTxt = new TextField("30");
+        TextField startingAnimalsTxt = new TextField("70");
         HBox height = new HBox(heightLab, heightTxt);
         HBox width = new HBox(widthLab, widthTxt);
         HBox jungleRatio = new HBox(jungleRatioLab, jungleRatioTxt);
@@ -199,6 +201,7 @@ public class App extends Application{
                     Integer.parseInt(moveEnergyTxt.getText()), Integer.parseInt(plantEnergyTxt.getText()),
                     Integer.parseInt(startingAnimalsTxt.getText()), magicFol.isSelected(), imagesArrayFol);
             primaryStage.setScene(makeMapScene());
+            primaryStage.setMaximized(true);
         });
 
         mapProperties.setAlignment(Pos.CENTER);
