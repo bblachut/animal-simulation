@@ -15,7 +15,7 @@ public class Animal implements IMapElement {
     private int currentEnergy;
     private int lifetime = 0;
     private int childrenAmount = 0;
-    private boolean isOffspring = false;
+    private boolean isOffspring = false; //says if the animal is a descendant of the tracked animal
 
     public Animal(AbstractWorldMap map, Vector2d initialPosition, Genotype genotype, int startEnergy){
         position = initialPosition;
@@ -62,18 +62,6 @@ public class Animal implements IMapElement {
         }
     }
 
-    public Genotype getGenotype() {
-        return genotype;
-    }
-
-    public int getCurrentEnergy() {
-        return currentEnergy;
-    }
-
-    public void changeCurrentEnergy(int energyChange) {
-        currentEnergy += energyChange;
-    }
-
     public Animal makeChild(Animal other){
         int childEnergy = this.getCurrentEnergy()/4+ other.getCurrentEnergy()/4;
         Genotype childGenotype = new Genotype(this, other);
@@ -84,6 +72,18 @@ public class Animal implements IMapElement {
             child.setOffspring(true);
         }
         return child;
+    }
+
+    public Genotype getGenotype() {
+        return genotype;
+    }
+
+    public int getCurrentEnergy() {
+        return currentEnergy;
+    }
+
+    public void changeCurrentEnergy(int energyChange) {
+        currentEnergy += energyChange;
     }
 
     public int getOrientation() {

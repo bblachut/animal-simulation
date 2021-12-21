@@ -147,8 +147,12 @@ public class App extends Application{
                 statFol.savetoFile();
             }
         });
-        VBox plotsRec = new VBox(statRec.plotAnimals(),statRec.plotGrass(),statRec.plotEnergy(),statRec.plotLifeTime(),statRec.plotChildren());
-        VBox plotsFol = new VBox(statFol.plotAnimals(),statFol.plotGrass(),statFol.plotEnergy(),statFol.plotLifeTime(),statFol.plotChildren());
+        VBox plotsRec = new VBox(new Label("Animal amount"), statRec.plotAnimals(), new Label("Grass amount"),
+                statRec.plotGrass(), new Label("Average energy"), statRec.plotEnergy(), new Label("Average Lifetime od dead animals"),
+                statRec.plotLifeTime(), new Label("Average amount of children for living animals"),statRec.plotChildren());
+        VBox plotsFol = new VBox(new Label("Animal amount"), statFol.plotAnimals(), new Label("Grass amount"),
+                statFol.plotGrass(), new Label("Average energy"), statFol.plotEnergy(), new Label("Average Lifetime od dead animals"),
+                statFol.plotLifeTime(), new Label("Average amount of children for living animals"), statFol.plotChildren());
         Thread engineThreadRec = new Thread(engineRec);
         Thread engineThreadFol = new Thread(engineFol);
         engineThreadRec.start();

@@ -104,7 +104,7 @@ public class Statistics implements IEngineObserver {
     }
 
     private void addDailyStats(){
-        String stats = map.getAnimalsAmount() + "," + map.getGrassAmount() + "," + Math.round(map.getAverageEnergy()*100.0)/100.0 + ","
+        String stats = dayCounter+"    "+ map.getAnimalsAmount() + "," + map.getGrassAmount() + "," + Math.round(map.getAverageEnergy()*100.0)/100.0 + ","
                 + Math.round(map.getAverageLifetime()*100.0)/100.0 + "," + Math.round(map.getAverageChildrenAmount()*100.0)/100.0;
         averageAnimalAmount = Math.round((averageAnimalAmount*(dayCounter-1)/dayCounter + (double) map.getAnimalsAmount()/dayCounter)*100.0)/100.0;
         averageGrassAmount = Math.round((averageGrassAmount*(dayCounter-1)/dayCounter + (double) map.getGrassAmount()/dayCounter)*100.0)/100.0;
@@ -132,6 +132,7 @@ public class Statistics implements IEngineObserver {
 
     @Override
     public void dayFinished() {
+        addDailyStats();
         Platform.runLater(() -> {
             animals.getData().add(new XYChart.Data<>(dayCounter, map.getAnimalsAmount()));
             grass.getData().add(new XYChart.Data<>(dayCounter, map.getGrassAmount()));
@@ -140,8 +141,7 @@ public class Statistics implements IEngineObserver {
             children.getData().add(new XYChart.Data<>(dayCounter, Math.round(map.getAverageChildrenAmount()*100.0)/100.0));
             dominantGenotypeLabel.setText(map.getDominantGenotype());
             updateTrackedStats();
-            addDailyStats();
-            dayCounter++;
         });
+        dayCounter++;
     }
 }

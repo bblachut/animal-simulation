@@ -11,9 +11,4 @@ public class Grass implements IMapElement {
     public Vector2d getPosition() {
         return position;
     }
-
-    @Override
-    public String toString(){
-        return "*";
-    }
 }

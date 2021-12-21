@@ -33,7 +33,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
     protected final Vector2d v2;
     private final Set<Vector2d> steppeFreeSquares = new HashSet<>();
     private final Set<Vector2d> jungleFreeSquares = new HashSet<>();
-    private final Set<Animal> livingAnimals = Collections.newSetFromMap(new ConcurrentHashMap<Animal, Boolean>());
+    private final Set<Animal> livingAnimals = Collections.newSetFromMap(new ConcurrentHashMap<>());
     private final Vector2d[] moveVectors = {new Vector2d(0,1), new Vector2d(1,1),new Vector2d(1,0), new Vector2d(1,-1),
             new Vector2d(0,-1),new Vector2d(-1,-1),new Vector2d(-1,0),new Vector2d(-1,1),};
     private final ConcurrentHashMap<Vector2d, ArrayList<Animal>> animals = new ConcurrentHashMap<>();
@@ -112,7 +112,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
         updateImage(animal.getPosition());
     }
 
-    public void removeAnimal(Animal animal){
+    private void removeAnimal(Animal animal){
         Vector2d position = animal.getPosition();
         animals.get(position).remove(animal);
         if (animals.get(position).isEmpty()) {
@@ -283,7 +283,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
             }
     }
 
-    public void doMagic(){
+    private void doMagic(){
         if (isMagic && magicDone<3 && livingAnimals.size() == 5){
             magicDone++;
             Random rng = new Random();
@@ -310,9 +310,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
     public void highlight(){
         for (Animal animal:livingAnimals) {
             if (animal.getGenotype().equals(Collections.max(numberOfGenotypes.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey())){
-                Platform.runLater(() -> {
-                    imagesArray[animal.getPosition().x][animal.getPosition().y].setImage(redSquare);
-                });
+                Platform.runLater(() -> imagesArray[animal.getPosition().x][animal.getPosition().y].setImage(redSquare));
             }
         }
     }
