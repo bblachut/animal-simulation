@@ -2,6 +2,7 @@ package agh.ics.oop.gui;
 
 import agh.ics.oop.*;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
@@ -41,6 +42,10 @@ public class App extends Application{
         this.primaryStage = primaryStage;
         primaryStage.setScene(makeMenuScene());
         primaryStage.show();
+        primaryStage.setOnCloseRequest(event -> {
+            Platform.exit();
+            System.exit(0);
+        });
     }
 
     private void drawFirstMap(){
