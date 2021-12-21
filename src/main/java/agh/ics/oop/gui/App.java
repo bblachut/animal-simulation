@@ -234,7 +234,8 @@ public class App extends Application{
         moveEnergyTxt.setAlignment(Pos.CENTER_LEFT);
         button.setPrefSize(100, 40);
 
-        VBox menu = new VBox(mapProperties, height, width, jungleRatio,new HBox(magicRec, magicFol), mapElements, startEnergy, moveEnergy, plantEnergy, startingAnimals, button);
+        VBox menu = new VBox(mapProperties, height, width, jungleRatio,new HBox(magicRec, magicFol), mapElements,
+                startEnergy, moveEnergy, plantEnergy, startingAnimals, button);
         return new Scene(menu, 600, 250);
     }
 
@@ -244,7 +245,8 @@ public class App extends Application{
                 ImageView image = new ImageView(transparent);
                 image.setPickOnBounds(true);
                 image.setOnMouseClicked(event -> {
-                    if (image.getUserData() != null && image.getUserData().getClass().equals(Animal.class) && startButton.getText().equals("start")){
+                    if (image.getUserData() != null && image.getUserData().getClass().equals(Animal.class) &&
+                            startButton.getText().equals("start")){
                         map.setTrackedAnimal((Animal) image.getUserData());
                         map.setTrackedAnimalChildren(0);
                         map.clearOffspring();
