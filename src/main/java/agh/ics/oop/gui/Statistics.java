@@ -8,7 +8,6 @@ import javafx.application.Platform;
 import javafx.scene.chart.*;
 import javafx.scene.control.Label;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Paint;
 
 import java.io.BufferedWriter;
 import java.io.FileWriter;
@@ -46,7 +45,7 @@ public class Statistics implements IEngineObserver {
 
     public LineChart<Number, Number> plotGrass(){
         LineChart<Number, Number> lineChart = plot(grass);
-        grass.getNode().lookup(".chart-series-line").setStyle("-fx-stroke: #0FBA19");;
+        grass.getNode().lookup(".chart-series-line").setStyle("-fx-stroke: #0FBA19");
         return lineChart;
     }
 
@@ -122,7 +121,9 @@ public class Statistics implements IEngineObserver {
                 writer.append(str);
                 writer.newLine();
             }
-            writer.append(averageAnimalAmount+","+averageGrassAmount+","+averageAverageEnergy+","+averageAverageLifetime+","+averageAverageChildren);
+            writer.append(String.valueOf(averageAnimalAmount)).append(",").append(String.valueOf(averageGrassAmount))//average values
+                    .append(",").append(String.valueOf(averageAverageEnergy)).append(",")
+                    .append(String.valueOf(averageAverageLifetime)).append(",").append(String.valueOf(averageAverageChildren));
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
