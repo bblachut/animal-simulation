@@ -54,7 +54,8 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
         }
     }
 
-    public AbstractWorldMap(int width, int height, double jungleRatio, int startEnergy, int moveEnergy, int plantEnergy, int startingAnimals, boolean isMagic, ImageView[][] imagesArray) {
+    public AbstractWorldMap(int width, int height, double jungleRatio, int startEnergy, int moveEnergy, int plantEnergy,
+                            int startingAnimals, boolean isMagic, ImageView[][] imagesArray) throws IllegalArgumentException {
         this.startEnergy = startEnergy;
         this.moveEnergy = moveEnergy;
         this.plantEnergy = plantEnergy;
@@ -62,8 +63,13 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
         this.height = height;
         this.isMagic = isMagic;
         upperRight = new Vector2d(width-1, height-1);
-        jungleLL = new Vector2d((int)((width/2)-((width*Math.sqrt((height*height)*jungleRatio))/(2*height))), (int)((height/2)-(Math.sqrt((height*height)*jungleRatio)/2)));
-        jungleUR = new Vector2d((int)((width/2)+((width*Math.sqrt((height*height)*jungleRatio))/(2*height))), (int)((height/2)+(Math.sqrt((height*height)*jungleRatio)/2)));
+        if (jungleRatio<0 || jungleRatio>1){
+            throw new IllegalArgumentException("Jungle ratio must be between 0 and 1");
+        }
+        jungleLL = new Vector2d((int)((width/2)-((width*Math.sqrt((height*height)*jungleRatio))/(2*height))),
+                (int)((height/2)-(Math.sqrt((height*height)*jungleRatio)/2)));
+        jungleUR = new Vector2d((int)((width/2)+((width*Math.sqrt((height*height)*jungleRatio))/(2*height))),
+                (int)((height/2)+(Math.sqrt((height*height)*jungleRatio)/2)));
         for (int x = 0; x < width; x++) {
             for (int y = 0; y < height; y++) {
                 Vector2d v = new Vector2d(x, y);
@@ -74,7 +80,10 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
         placeStartingAnimals(startingAnimals);
     }
 
-    private void placeStartingAnimals(int startingAnimals){
+    private void placeStartingAnimals(int startingAnimals) throws IllegalArgumentException{
+        if (startingAnimals > width*height){
+            throw new IllegalArgumentException("Too many starting animals");
+        }
         Random rng = new Random();
         for (int i = 0; i < startingAnimals; i++) {
             boolean shouldShuffle = true;

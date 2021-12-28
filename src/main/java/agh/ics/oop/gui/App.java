@@ -6,10 +6,7 @@ import javafx.application.Platform;
 import javafx.geometry.HPos;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
@@ -193,18 +190,32 @@ public class App extends Application{
         HBox magic = new HBox(magicRec, magicFol);
 
         button.setOnAction(event -> {
-            imagesArrayRec = new ImageView[Integer.parseInt(widthTxt.getText())][Integer.parseInt(heightTxt.getText())];
-            imagesArrayFol = new ImageView[Integer.parseInt(widthTxt.getText())][Integer.parseInt(heightTxt.getText())];
-            mapRec = new RectangularMap(Integer.parseInt(widthTxt.getText()), Integer.parseInt(heightTxt.getText()),
-                    Double.parseDouble(jungleRatioTxt.getText()), Integer.parseInt(startEnergyTxt.getText()),
-                    Integer.parseInt(moveEnergyTxt.getText()), Integer.parseInt(plantEnergyTxt.getText()),
-                    Integer.parseInt(startingAnimalsTxt.getText()), magicRec.isSelected(), imagesArrayRec);
-            mapFol = new FoldedMap(Integer.parseInt(widthTxt.getText()), Integer.parseInt(heightTxt.getText()),
-                    Double.parseDouble(jungleRatioTxt.getText()), Integer.parseInt(startEnergyTxt.getText()),
-                    Integer.parseInt(moveEnergyTxt.getText()), Integer.parseInt(plantEnergyTxt.getText()),
-                    Integer.parseInt(startingAnimalsTxt.getText()), magicFol.isSelected(), imagesArrayFol);
-            primaryStage.setScene(makeMapScene());
-            primaryStage.setMaximized(true);
+            try {
+                imagesArrayRec = new ImageView[Integer.parseInt(widthTxt.getText())][Integer.parseInt(heightTxt.getText())];
+                imagesArrayFol = new ImageView[Integer.parseInt(widthTxt.getText())][Integer.parseInt(heightTxt.getText())];
+                mapRec = new RectangularMap(Integer.parseInt(widthTxt.getText()), Integer.parseInt(heightTxt.getText()),
+                        Double.parseDouble(jungleRatioTxt.getText()), Integer.parseInt(startEnergyTxt.getText()),
+                        Integer.parseInt(moveEnergyTxt.getText()), Integer.parseInt(plantEnergyTxt.getText()),
+                        Integer.parseInt(startingAnimalsTxt.getText()), magicRec.isSelected(), imagesArrayRec);
+                mapFol = new FoldedMap(Integer.parseInt(widthTxt.getText()), Integer.parseInt(heightTxt.getText()),
+                        Double.parseDouble(jungleRatioTxt.getText()), Integer.parseInt(startEnergyTxt.getText()),
+                        Integer.parseInt(moveEnergyTxt.getText()), Integer.parseInt(plantEnergyTxt.getText()),
+                        Integer.parseInt(startingAnimalsTxt.getText()), magicFol.isSelected(), imagesArrayFol);
+                primaryStage.setScene(makeMapScene());
+                primaryStage.setMaximized(true);
+            }catch (NumberFormatException e){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText(null);
+                alert.setTitle("Insert correct values");
+                alert.setContentText("Insert correct values");
+                alert.showAndWait();
+            }catch (IllegalArgumentException e){
+                Alert alert = new Alert(Alert.AlertType.ERROR);
+                alert.setHeaderText(null);
+                alert.setTitle(e.getMessage());
+                alert.setContentText(e.getMessage());
+                alert.showAndWait();
+            }
         });
 
         magic.setAlignment(Pos.CENTER);
