@@ -26,6 +26,8 @@ public class App extends Application{
     private final GridPane gridFol = new GridPane();
     private ThreadedSimulationEngine engineRec;
     private ThreadedSimulationEngine engineFol;
+    private boolean isRunningRec = true;
+    private boolean isRunningFol = true;
     {
         try {
             transparent = new Image(new FileInputStream(".\\src\\main\\resources\\transparent.png"));
@@ -95,8 +97,8 @@ public class App extends Application{
         Button saveStatsFol = new Button("Save statistics to file");
         startButtonRec.setAlignment(Pos.CENTER);
         startButtonFol.setAlignment(Pos.CENTER);
-        setUpImageArray(mapRec, imagesArrayRec, startButtonRec, statRec);
-        setUpImageArray(mapFol, imagesArrayFol, startButtonFol, statFol);
+        setUpImageArray(mapRec, imagesArrayRec, statRec);
+        setUpImageArray(mapFol, imagesArrayFol, statFol);
         for (int i = 0; i <= upperRight.x-lowerLeft.x+1; i++) {
             gridRec.getColumnConstraints().add(new ColumnConstraints(20));
             gridFol.getColumnConstraints().add(new ColumnConstraints(20));
@@ -107,40 +109,44 @@ public class App extends Application{
         }
         drawFirstMap();
         startButtonRec.setOnMouseClicked(event -> {
-            if(startButtonRec.getText().equals("stop")) {
+            if(isRunningRec) {
                 engineRec.setShouldRun(false);
+                isRunningRec = false;
                 startButtonRec.setText("start");
             }else {
                 startButtonRec.setText("stop");
+                isRunningRec = true;
                 engineRec.setShouldRun(true);
             }
         });
         startButtonFol.setOnMouseClicked(event -> {
-            if(startButtonFol.getText().equals("stop")) {
+            if(isRunningFol) {
                 engineFol.setShouldRun(false);
+                isRunningFol = false;
                 startButtonFol.setText("start");
             }else {
                 startButtonFol.setText("stop");
+                isRunningFol = false;
                 engineFol.setShouldRun(true);
             }
         });
         highlightRec.setOnMouseClicked(event -> {
-            if (startButtonRec.getText().equals("start")) {
+            if (!isRunningRec) {
                 mapRec.highlight();
             }
         });
         highlightFol.setOnMouseClicked(event -> {
-            if (startButtonFol.getText().equals("start")) {
+            if (!isRunningFol) {
                 mapFol.highlight();
             }
         });
         saveStatsRec.setOnMouseClicked(event -> {
-            if (startButtonRec.getText().equals("start")) {
+            if (!isRunningRec) {
                 statRec.savetoFile();
             }
         });
         saveStatsFol.setOnMouseClicked(event -> {
-            if (startButtonFol.getText().equals("start")) {
+            if (!isRunningFol) {
                 statFol.savetoFile();
             }
         });
@@ -249,14 +255,20 @@ public class App extends Application{
         return new Scene(menu, 400, 250);
     }
 
-    private void setUpImageArray(AbstractWorldMap map, ImageView[][] imagesArray, Button startButton, Statistics stats){
+    private void setUpImageArray(AbstractWorldMap map, ImageView[][] imagesArray, Statistics stats){
         for (int x = 0; x < mapRec.getWidth(); x++) {
             for (int y = 0; y < mapRec.getHeight(); y++) {
                 ImageView image = new ImageView(transparent);
+                boolean isRunning;
+                if (map.getClass().equals(RectangularMap.class)){
+                    isRunning = isRunningRec;
+                }
+                else {
+                    isRunning = isRunningFol;
+                }
                 image.setPickOnBounds(true);
                 image.setOnMouseClicked(event -> {
-                    if (image.getUserData() != null && image.getUserData().getClass().equals(Animal.class) &&
-                            startButton.getText().equals("start")){
+                    if (image.getUserData() != null && image.getUserData().getClass().equals(Animal.class) && ! isRunning){
                         map.setTrackedAnimal((Animal) image.getUserData());
                         map.setTrackedAnimalChildren(0);
                         map.clearOffspring();
