@@ -164,7 +164,6 @@ public class App extends Application{
     }
 
     private Scene makeMenuScene(){
-//        Label mapProperties = new Label("Map properties");
         Label widthLab = new Label("Map width");
         Label heightLab = new Label("Map height");
         Label jungleRatioLab = new Label("Jungle ratio");
@@ -182,7 +181,6 @@ public class App extends Application{
         HBox height = new HBox(heightLab, heightTxt);
         HBox width = new HBox(widthLab, widthTxt);
         HBox jungleRatio = new HBox(jungleRatioLab, jungleRatioTxt);
-//        Label mapElements = new Label("Map elements");
         HBox startEnergy = new HBox(startEnergyLab, startEnergyTxt);
         HBox plantEnergy = new HBox(plantEnergyLab, plantEnergyTxt);
         HBox moveEnergy = new HBox(moveEnergyLab, moveEnergyTxt);
