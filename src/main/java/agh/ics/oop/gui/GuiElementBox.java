@@ -31,32 +31,11 @@ public class GuiElementBox {
             return images[0];
         }
         if (element.getClass().equals(Animal.class)){
-            switch (((Animal) element).getOrientation()){
-                case 0 -> {
-                    return images[1];
-                }
-                case 1 -> {
-                    return images[2];
-                }
-                case 2 -> {
-                    return images[3];
-                }
-                case 3 -> {
-                    return images[4];
-                }
-                case 4 -> {
-                    return images[5];
-                }
-                case 5 -> {
-                    return images[6];
-                }
-                case 6 -> {
-                    return images[7];
-                }
-                case 7 -> {
-                    return images[8];
-                }
-                default -> throw new IllegalStateException("Unexpected value: " + ((Animal) element).getOrientation());
+            int orientation = ((Animal) element).getOrientation();
+            if (orientation>=0 && orientation<8){
+                return images[orientation+1];
+            }else {
+                throw new IllegalStateException("Unexpected value: " + orientation);
             }
         }
         throw new IllegalArgumentException("You can't pass objects of class " + element.getClass());
