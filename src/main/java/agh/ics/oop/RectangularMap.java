@@ -9,6 +9,6 @@ public class RectangularMap extends AbstractWorldMap {
     }
 
     public boolean canMoveTo(Vector2d position) {
-        return position.precedes(v2) && position.follows(v1);
+        return position.precedes(upperRight) && position.follows(lowerLeft);
     }
 }

@@ -20,17 +20,8 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
     private final int startEnergy;
     private final int moveEnergy;
     private final int plantEnergy;
-    private final boolean isMagic;
-    private int magicDone = 0;
-    private double averageLifetime = 0;
-    private double averageChildrenAmount = 0;
-    private int deadAnimalsCounter = 0;
-    private final ImageView[][] imagesArray;
-    private Animal trackedAnimal;
-    private int trackedAnimalChildren;
-    private int trackedAnimalDescendents;
-    protected final Vector2d v1 = new Vector2d(0,0);
-    protected final Vector2d v2;
+    protected final Vector2d lowerLeft = new Vector2d(0,0);
+    protected final Vector2d upperRight;
     private final Set<Vector2d> steppeFreeSquares = new HashSet<>();
     private final Set<Vector2d> jungleFreeSquares = new HashSet<>();
     private final Set<Animal> livingAnimals = Collections.newSetFromMap(new ConcurrentHashMap<>());
@@ -39,12 +30,21 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
     private final ConcurrentHashMap<Vector2d, ArrayList<Animal>> animals = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Vector2d, Grass> grass = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<Genotype, Integer> numberOfGenotypes = new ConcurrentHashMap<>();
+
+    private double averageLifetime = 0;
+    private double averageChildrenAmount = 0;
+    private int deadAnimalsCounter = 0;
+    private Animal trackedAnimal;
+    private int trackedAnimalChildren;
+    private int trackedAnimalDescendents;
+
+    private final boolean isMagic;
+    private int magicDone = 0;
+
+    private final ImageView[][] imagesArray;
     private Image transparent;
     private Image redSquare;
     private final GuiElementBox guiElementBox = new GuiElementBox();
-
-
-
     {
         try {
             transparent = new Image(new FileInputStream(".\\src\\main\\resources\\transparent.png"));
@@ -61,7 +61,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
         this.width = width;
         this.height = height;
         this.isMagic = isMagic;
-        v2 = new Vector2d(width-1, height-1);
+        upperRight = new Vector2d(width-1, height-1);
         jungleLL = new Vector2d((int)((width/2)-((width*Math.sqrt((height*height)*jungleRatio))/(2*height))), (int)((height/2)-(Math.sqrt((height*height)*jungleRatio)/2)));
         jungleUR = new Vector2d((int)((width/2)+((width*Math.sqrt((height*height)*jungleRatio))/(2*height))), (int)((height/2)+(Math.sqrt((height*height)*jungleRatio)/2)));
         for (int x = 0; x < width; x++) {
@@ -258,30 +258,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
         }
     }
 
-    private void updateImage(Vector2d position){
-            if (animals.containsKey(position)){
-                ArrayList<Animal> list = animals.get(position);
-                list.sort(Comparator.comparingInt((Animal a) -> -a.getCurrentEnergy()));
-                Animal animal = list.get(0);
-                Platform.runLater(() -> {
-                    imagesArray[position.x][position.y].setImage(guiElementBox.getBoxElement(animal));
-                    imagesArray[position.x][position.y].setOpacity((double) animal.getCurrentEnergy()/(2*startEnergy));
-                    imagesArray[position.x][position.y].setUserData(animal);
-                });
-            }else if (grass.containsKey(position)){
-                Grass grass1 = grass.get(position);
-                Platform.runLater(() -> {
-                    imagesArray[position.x][position.y].setImage(guiElementBox.getBoxElement(grass1));
-                    imagesArray[position.x][position.y].setOpacity(1);
-                    imagesArray[position.x][position.y].setUserData(grass1);
-                });
-            }else {
-                Platform.runLater(() -> {
-                    imagesArray[position.x][position.y].setImage(transparent);
-                    imagesArray[position.x][position.y].setUserData(null);
-                });
-            }
-    }
+    //magic
 
     private void doMagic(){
         if (isMagic && magicDone<3 && livingAnimals.size() == 5){
@@ -307,6 +284,34 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
         }
     }
 
+
+    //displaying
+
+    private void updateImage(Vector2d position){
+        if (animals.containsKey(position)){
+            ArrayList<Animal> list = animals.get(position);
+            list.sort(Comparator.comparingInt((Animal a) -> -a.getCurrentEnergy()));
+            Animal animal = list.get(0);
+            Platform.runLater(() -> {
+                imagesArray[position.x][position.y].setImage(guiElementBox.getBoxElement(animal));
+                imagesArray[position.x][position.y].setOpacity((double) animal.getCurrentEnergy()/(2*startEnergy));
+                imagesArray[position.x][position.y].setUserData(animal);
+            });
+        }else if (grass.containsKey(position)){
+            Grass grass1 = grass.get(position);
+            Platform.runLater(() -> {
+                imagesArray[position.x][position.y].setImage(guiElementBox.getBoxElement(grass1));
+                imagesArray[position.x][position.y].setOpacity(1);
+                imagesArray[position.x][position.y].setUserData(grass1);
+            });
+        }else {
+            Platform.runLater(() -> {
+                imagesArray[position.x][position.y].setImage(transparent);
+                imagesArray[position.x][position.y].setUserData(null);
+            });
+        }
+    }
+
     public void highlight(){
         for (Animal animal:livingAnimals) {
             if (animal.getGenotype().equals(Collections.max(numberOfGenotypes.entrySet(), Comparator.comparingInt(Map.Entry::getValue)).getKey())){
@@ -314,6 +319,9 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
             }
         }
     }
+
+
+    //getters and setters
 
     public int getOffspring(){
         return trackedAnimalDescendents;
@@ -332,11 +340,11 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
     }
 
     public Vector2d getLowerLeft(){
-        return v1;
+        return lowerLeft;
     }
 
     public Vector2d getUpperRight(){
-        return v2;
+        return upperRight;
     }
 
     public int getAnimalsAmount(){
@@ -392,6 +400,7 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
         }
     }
 
+    //abstract
 
     public abstract boolean canMoveTo(Vector2d position);
 
