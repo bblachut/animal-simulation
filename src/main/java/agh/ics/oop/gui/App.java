@@ -164,7 +164,7 @@ public class App extends Application{
     }
 
     private Scene makeMenuScene(){
-        Label mapProperties = new Label("Map properties");
+//        Label mapProperties = new Label("Map properties");
         Label widthLab = new Label("Map width");
         Label heightLab = new Label("Map height");
         Label jungleRatioLab = new Label("Jungle ratio");
@@ -182,7 +182,7 @@ public class App extends Application{
         HBox height = new HBox(heightLab, heightTxt);
         HBox width = new HBox(widthLab, widthTxt);
         HBox jungleRatio = new HBox(jungleRatioLab, jungleRatioTxt);
-        Label mapElements = new Label("Map elements");
+//        Label mapElements = new Label("Map elements");
         HBox startEnergy = new HBox(startEnergyLab, startEnergyTxt);
         HBox plantEnergy = new HBox(plantEnergyLab, plantEnergyTxt);
         HBox moveEnergy = new HBox(moveEnergyLab, moveEnergyTxt);
@@ -192,6 +192,7 @@ public class App extends Application{
         CheckBox magicFol = new CheckBox();
         magicRec.setText("Should rectangular map be magic?");
         magicFol.setText("Should folded map be magic?");
+        HBox magic = new HBox(magicRec, magicFol);
 
         button.setOnAction(event -> {
             imagesArrayRec = new ImageView[Integer.parseInt(widthTxt.getText())][Integer.parseInt(heightTxt.getText())];
@@ -208,15 +209,14 @@ public class App extends Application{
             primaryStage.setMaximized(true);
         });
 
-        mapProperties.setAlignment(Pos.CENTER);
+        magic.setAlignment(Pos.CENTER);
         height.setAlignment(Pos.CENTER);
         width.setAlignment(Pos.CENTER);
         jungleRatio.setAlignment(Pos.CENTER);
-        mapElements.setAlignment(Pos.CENTER);
         startEnergy.setAlignment(Pos.CENTER);
         plantEnergy.setAlignment(Pos.CENTER);
         moveEnergy.setAlignment(Pos.CENTER);
-        button.setAlignment(Pos.CENTER_RIGHT);
+        button.setAlignment(Pos.CENTER);
         startingAnimals.setAlignment(Pos.CENTER);
         widthLab.setAlignment(Pos.CENTER_RIGHT);
         heightLab.setAlignment(Pos.CENTER_RIGHT);
@@ -234,9 +234,10 @@ public class App extends Application{
         moveEnergyTxt.setAlignment(Pos.CENTER_LEFT);
         button.setPrefSize(100, 40);
 
-        VBox menu = new VBox(mapProperties, height, width, jungleRatio,new HBox(magicRec, magicFol), mapElements,
+        VBox menu = new VBox(height, width, jungleRatio,magic,
                 startEnergy, moveEnergy, plantEnergy, startingAnimals, button);
-        return new Scene(menu, 600, 250);
+        menu.setAlignment(Pos.CENTER);
+        return new Scene(menu, 400, 250);
     }
 
     private void setUpImageArray(AbstractWorldMap map, ImageView[][] imagesArray, Button startButton, Statistics stats){
