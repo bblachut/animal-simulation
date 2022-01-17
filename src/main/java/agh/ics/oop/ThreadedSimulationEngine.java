@@ -40,7 +40,7 @@ public class ThreadedSimulationEngine implements Runnable{
         }
     }
 
-    public void setShouldRun(boolean shouldRun) {
+    public synchronized void setShouldRun(boolean shouldRun) {
         this.shouldRun = shouldRun;
     }
 

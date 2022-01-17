@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Animal implements IMapElement {
-    private int orientation;
+    private int orientation;    // enum byłby czytelniejszy
     private Vector2d position;
     private final AbstractWorldMap map;
     private final Genotype genotype;
@@ -38,7 +38,7 @@ public class Animal implements IMapElement {
                     positionChanged(oldPos, destination);
                 }
             }
-            case 4 -> {
+            case 4 -> { // za miesiąc będzie Pan pamiętał, dlaczego akurat 4?
                 Vector2d oldPos = position;
                 Vector2d destination = position.add(map.getMoveVector((orientation+4)%8));
                 if (map.canMoveTo(destination)) {
@@ -63,10 +63,10 @@ public class Animal implements IMapElement {
     }
 
     public Animal makeChild(Animal other){
-        int childEnergy = this.getCurrentEnergy()/4+ other.getCurrentEnergy()/4;
+        int childEnergy = this.getCurrentEnergy()/4+ other.getCurrentEnergy()/4;    // czemu rodzice nie tracą tej energii?
         Genotype childGenotype = new Genotype(this, other);
         childrenAmount++;
-        other.incrementChildren();
+        other.childrenAmount++;
         Animal child = new Animal(map, position, childGenotype, childEnergy);
         if (isOffspring || other.isOffspring){
             child.setOffspring(true);

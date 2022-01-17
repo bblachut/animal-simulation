@@ -15,8 +15,8 @@ public class Genotype {
         mixGenotypes(a1, a2);
     }
 
-    private void fillRandom(){
-       Random rng = new Random();
+    private void fillRandom(){  // czy ta metoda jest potrzebna, skoro jest wywoływana tylko raz w konstruktorze, który ma tylko to wywołanie?
+       Random rng = new Random();   // może zapisać jako pole statyczne?
        for (int i = 0; i < 32; i++) {
            genotype[i] = rng.nextInt(8);
        }
@@ -25,7 +25,7 @@ public class Genotype {
 
    private void mixGenotypes(Animal a1, Animal a2){
        boolean strongerTakesLeft = new Random().nextBoolean();
-       a1.changeCurrentEnergy(-a1.getCurrentEnergy()/4);
+       a1.changeCurrentEnergy(-a1.getCurrentEnergy()/4);    // czemu genotyp majstruje przy energii zwierząt?
        a2.changeCurrentEnergy(-a2.getCurrentEnergy()/4);
        int[] a1Gen = a1.getGenotype().getArray();
        int[] a2Gen = a2.getGenotype().getArray();
