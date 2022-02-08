@@ -269,11 +269,12 @@ public abstract class AbstractWorldMap implements IPositionChangeObserver {
 
     //magic
 
-    private void doMagic(){
+    private void doMagic(){//dodac tablice do trzymania zwierząt
         if (isMagic && magicDone<3 && livingAnimals.size() == 5){
             magicDone++;
             Random rng = new Random();
-            for(Animal animal: livingAnimals){
+            ArrayList<Animal> animalsToAdd = new ArrayList<>(livingAnimals);
+            for(Animal animal: animalsToAdd){
                 if (livingAnimals.size() < width*height){
                     boolean shouldShuffle = true;
                     while (shouldShuffle) {

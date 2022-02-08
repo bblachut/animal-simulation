@@ -126,7 +126,7 @@ public class App extends Application{
                 startButtonFol.setText("start");
             }else {
                 startButtonFol.setText("stop");
-                isRunningFol = false;
+                isRunningFol = true;
                 engineFol.setShouldRun(true);
             }
         });
@@ -259,16 +259,9 @@ public class App extends Application{
         for (int x = 0; x < mapRec.getWidth(); x++) {
             for (int y = 0; y < mapRec.getHeight(); y++) {
                 ImageView image = new ImageView(transparent);
-                boolean isRunning;
-                if (map.getClass().equals(RectangularMap.class)){
-                    isRunning = isRunningRec;
-                }
-                else {
-                    isRunning = isRunningFol;
-                }
                 image.setPickOnBounds(true);
                 image.setOnMouseClicked(event -> {
-                    if (image.getUserData() != null && image.getUserData().getClass().equals(Animal.class) && ! isRunning){
+                    if (image.getUserData() != null && image.getUserData().getClass().equals(Animal.class) && ((map.getClass().equals(RectangularMap.class) && !isRunningRec) || !isRunningFol)){
                         map.setTrackedAnimal((Animal) image.getUserData());
                         map.setTrackedAnimalChildren(0);
                         map.clearOffspring();
